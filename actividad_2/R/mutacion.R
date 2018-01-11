@@ -46,8 +46,7 @@ poblacion <- list(ind1, ind2, ind3)
 recombinacion <- function(poblacion, 
                           tipo.x = "discreta",
                           tipo.param = "intermedia", 
-                          global = TRUE,
-                          lambda, mu){
+                          global = TRUE){
   
   if (!all(c(tipo.x, tipo.param) %in% c("discreta", "intermedia"))) 
     stop("El tipo de recombinación debe ser discreta o intermedia.")
@@ -86,3 +85,22 @@ recombinacion <- function(poblacion,
               sigma = hijo[(dim.x + 1):dim.ind]))
 }
 
+seleccion_supervivientes <- function(poblacion, 
+                                     mu,
+                                     lambda,
+                                     estrategia = "",
+                                     funcion,
+                                     min = TRUE){
+  
+  nueva.poblacion <- replicate(lambda, recombinacion(poblacion), simplify = FALSE)
+  
+  if (estrategia == "+") nueva.poblacion <- c(poblacion, nueva.poblacion)
+  
+  x <- lapply(nueva.poblacion, `[[`, 1)
+  x.fitness <- sapply(x, funcion)
+  
+  x.mu <- rank(x.fitness) <= mu
+  if (!min) x.mu <- !x.mu
+  return(nueva.poblacion[x.mu])
+}
+  
