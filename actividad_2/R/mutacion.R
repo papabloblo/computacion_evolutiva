@@ -1,63 +1,34 @@
 
 # Representación de individuos --------------------------------------------
 
-ind <- list(x = 1:5,
-            sigma = 0.5)
-
-tau <- 2
-
-representacion_individuo_continua <- function(n_x, 
-                                              n_sigma = 1,
-                                              min, 
-                                              max,
-                                              tau1,
-                                              tau2){
-  x <- runif(n, min = min, max = max)
-  sigma <- 
-}
-
-mutacion_es_no_correladas <- function(individuo, 
-                                      tau1,
-                                      tau2,
-                                      epsilon){
+mutacion <- function(individuo, 
+                     param){
   
-  sigma <- individuo$sigma*exp(tau1*rnorm(1) + tau2*rnorm(1))
+  sigma <- individuo$sigma*exp(param$tau1*rnorm(1) + param$tau2*rnorm(1))
   
-  sigma <- ifelse(sigma < epsilon, epsilon, sigma)
+  sigma <- ifelse(sigma < param$epsilon, param$epsilon, sigma)
   
   x <- individuo$x + individuo$sigma * rnorm(length(individuo$x))
   
-  return(list(x, sigma))
+  return(list(x = x, sigma = sigma))
 }
 
-mutacion_es_no_correladas(ind, 1, 0, 0.3)
-
-ind1 <- list(x = 1:5,
-            sigma = 0.5)
-
-ind2 <- list(x = 2:6,
-             sigma = 0.75)
-
-ind3 <- list(x = 3:7,
-             sigma = 0.05)
-
-poblacion <- list(ind1, ind2, ind3)
-
 recombinacion <- function(poblacion, 
-                          tipo.x = "discreta",
-                          tipo.param = "intermedia", 
-                          global = TRUE){
+                          param){
   
   if (!all(c(tipo.x, tipo.param) %in% c("discreta", "intermedia"))) 
     stop("El tipo de recombinación debe ser discreta o intermedia.")
-  
+  poblacion <- lapply(poblacion, function(x){ 
+    x$fitness <- NULL
+    return(x)
+    }
+  )
   dim.x <- length(poblacion[[1]]$x)
   poblacion <- do.call(rbind, lapply(poblacion, unlist))
   dim.poblacion <- nrow(poblacion)
   dim.ind <- ncol(poblacion)
    
-  
-  if (global){
+  if (param$global){
     muestra_tam2 <- function(dim.poblacion) sample(1:dim.poblacion, 2)
     padres <- replicate(dim.ind, muestra_tam2(dim.poblacion), simplify = F)
   } else {
@@ -67,7 +38,7 @@ recombinacion <- function(poblacion,
   
   hijo <- numeric(dim.ind)
   for (n in 1:dim.x){
-    if (tipo.x == "discreta"){
+    if (param$recomb.x == "discreta"){
       hijo[n] <- sample(poblacion[padres[[n]], n], 1)
     } else {
       hijo[n] <- mean(poblacion[padres[[n]], n], 1)
@@ -75,7 +46,7 @@ recombinacion <- function(poblacion,
   }
   
   for (n in (dim.x + 1):dim.ind){
-    if (tipo.param == "discreta"){
+    if (param$recomb.sigma == "discreta"){
       hijo[n] <- sample(poblacion[padres[[n]], n], 1)
     } else {
       hijo[n] <- mean(poblacion[padres[[n]], n], 1)
@@ -85,22 +56,92 @@ recombinacion <- function(poblacion,
               sigma = hijo[(dim.x + 1):dim.ind]))
 }
 
-seleccion_supervivientes <- function(poblacion, 
-                                     mu,
-                                     lambda,
-                                     estrategia = "",
-                                     funcion,
-                                     min = TRUE){
+seleccion_supervivientes <- function(poblacion,
+                                     nueva.poblacion,
+                                     param){
+
+  if (param$estrategia == "+") nueva.poblacion <- c(poblacion, nueva.poblacion)
   
-  nueva.poblacion <- replicate(lambda, recombinacion(poblacion), simplify = FALSE)
+  fitness <- sapply(nueva.poblacion, `[[`, "fitness")
   
-  if (estrategia == "+") nueva.poblacion <- c(poblacion, nueva.poblacion)
-  
-  x <- lapply(nueva.poblacion, `[[`, 1)
-  x.fitness <- sapply(x, funcion)
-  
-  x.mu <- rank(x.fitness) <= mu
-  if (!min) x.mu <- !x.mu
+  x.mu <- rank(fitness) <= param$mu
+  if (!param$min) x.mu <- !x.mu
   return(nueva.poblacion[x.mu])
 }
   
+
+# Algoritmo principal -----------------------------------------------------
+
+# Inicialización de la población
+
+generacion_individuo <- function(param) {
+  individuo <- list()
+  individuo$x <- runif(param$n.x, param$x.min, param$x.max)
+  individuo$sigma <- rnorm(param$n.sigma, mean = 0, sd = 1)
+  individuo
+}
+
+generacion_poblacion <- function(param) {
+  replicate(n = param$tam.poblacion,
+            generacion_individuo(param),
+            simplify = F)
+}
+
+# Lista de parámetros
+param <- list(n.x = 5,
+              n.sigma = 5,
+              tam.poblacion = 10,
+              
+              x.min = -1,
+              x.max = 1,
+              num.iter = 5,
+              
+              lambda = 100,
+              mu = 10, # ¿== tam.poblacion?
+              estrategia = "",
+              min = TRUE,
+              funcion = suma_powell,
+              
+              global = TRUE,
+              recomb.x = "discreta",
+              recomb.sigma = "discreta",
+              
+              tau1 = 0.7,
+              tau2 = 0.8,
+              epsilon = 0.01
+              )
+
+
+# Población inicial
+poblacion <- generacion_poblacion(param)
+
+poblacion <- lapply(poblacion, function(x){
+  x$fitness <- param$funcion(x$x)
+  return(x)
+  }
+  )
+
+
+num.iter <- 100
+for (i in 1:num.iter){
+  ## DUDA: primero mutación o recombinación?
+  nueva.poblacion <- replicate(param$lambda, recombinacion(poblacion, param), simplify = FALSE)
+  
+  nueva.poblacion <- lapply(nueva.poblacion, mutacion, param = param)
+  
+  nueva.poblacion <- lapply(nueva.poblacion, function(x){
+    x$fitness <- param$funcion(x$x)
+    return(x)
+  }
+  )
+  
+  poblacion <- seleccion_supervivientes(poblacion = poblacion,
+                                        nueva.poblacion = nueva.poblacion,
+                                        param)
+  
+  print(min(sapply(poblacion, `[[`, "fitness")))
+}
+
+
+
+
