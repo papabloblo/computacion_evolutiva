@@ -1,6 +1,13 @@
 
-# Representación de individuos --------------------------------------------
-
+#' Mutación para estrategia evolutiva
+#'
+#' @param individuo list. Lista con dos elementos: x y sigma.
+#' @param param list. Lista con los parámetros de la estrategia evolutiva.
+#'
+#' @return
+#' @export
+#'
+#' @examples
 mutacion <- function(individuo, 
                      param){
   
@@ -13,6 +20,15 @@ mutacion <- function(individuo,
   return(list(x = x, sigma = sigma))
 }
 
+#' Title
+#'
+#' @param poblacion 
+#' @param param 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 recombinacion <- function(poblacion, 
                           param){
   
@@ -26,8 +42,8 @@ recombinacion <- function(poblacion,
   dim.poblacion <- nrow(poblacion)
   dim.ind <- ncol(poblacion)
    
+  muestra_tam2 <- function(dim.poblacion) sample(1:dim.poblacion, 2)
   if (param$global){
-    muestra_tam2 <- function(dim.poblacion) sample(1:dim.poblacion, 2)
     padres <- replicate(dim.ind, muestra_tam2(dim.poblacion), simplify = F)
   } else {
     padres <- list(muestra_tam2(dim.poblacion))
@@ -85,30 +101,6 @@ generacion_poblacion <- function(param) {
             simplify = F)
 }
 
-# Lista de parámetros
-param <- list(n.x = 5,
-              n.sigma = 1,
-              tam.poblacion = 30,
-              
-              x.min = -1,
-              x.max = 1,
-              num.iter = 5,
-              
-              lambda = 200,
-              mu = 30, # ¿== tam.poblacion?
-              estrategia = "",
-              min = TRUE,
-              funcion = suma_powell,
-              
-              global = TRUE,
-              recomb.x = "discreta",
-              recomb.sigma = "discreta",
-              
-              tau1 = 0.1,
-              tau2 = 0.1,
-              epsilon = 0.01
-              )
-
 
 estrategia_evolutiva <- function(param) {
   # Población inicial
@@ -142,13 +134,12 @@ estrategia_evolutiva <- function(param) {
     
     traza.fitness[[i]] <- sapply(poblacion, `[[`, "fitness")
     print(min(traza.fitness[[i]]))
-  
   }
+  return(list(traza.fitness = traza.fitness, 
+              poblacion.final = poblacion))
 }
 
-estrategia_evolutiva(param)
-return(list(traza.fitness = traza.fitness, 
-            poblacion.final = poblacion))
+
 
 
 
