@@ -16,8 +16,6 @@ mutacion <- function(individuo,
 recombinacion <- function(poblacion, 
                           param){
   
-  if (!all(c(tipo.x, tipo.param) %in% c("discreta", "intermedia"))) 
-    stop("El tipo de recombinación debe ser discreta o intermedia.")
   poblacion <- lapply(poblacion, function(x){ 
     x$fitness <- NULL
     return(x)
@@ -89,15 +87,15 @@ generacion_poblacion <- function(param) {
 
 # Lista de parámetros
 param <- list(n.x = 5,
-              n.sigma = 5,
-              tam.poblacion = 10,
+              n.sigma = 1,
+              tam.poblacion = 30,
               
               x.min = -1,
               x.max = 1,
               num.iter = 5,
               
-              lambda = 100,
-              mu = 10, # ¿== tam.poblacion?
+              lambda = 200,
+              mu = 30, # ¿== tam.poblacion?
               estrategia = "",
               min = TRUE,
               funcion = suma_powell,
@@ -106,42 +104,51 @@ param <- list(n.x = 5,
               recomb.x = "discreta",
               recomb.sigma = "discreta",
               
-              tau1 = 0.7,
-              tau2 = 0.8,
+              tau1 = 0.1,
+              tau2 = 0.1,
               epsilon = 0.01
               )
 
 
-# Población inicial
-poblacion <- generacion_poblacion(param)
-
-poblacion <- lapply(poblacion, function(x){
-  x$fitness <- param$funcion(x$x)
-  return(x)
+estrategia_evolutiva <- function(param) {
+  # Población inicial
+  poblacion <- generacion_poblacion(param)
+  
+  poblacion <- lapply(poblacion, function(x){
+                                    x$fitness <- param$funcion(x$x)
+                                    return(x)
+                                  }
+                      )
+  
+  
+  num.iter <- 100
+  traza.fitness <- vector("list", num.iter)
+  for (i in 1:num.iter){
+    ## DUDA: primero mutación o recombinación?
+    nueva.poblacion <- replicate(param$lambda, recombinacion(poblacion, param), simplify = FALSE)
+    
+    nueva.poblacion <- lapply(nueva.poblacion, mutacion, param = param)
+    
+    nueva.poblacion <- lapply(nueva.poblacion, function(x){
+      x$fitness <- param$funcion(x$x)
+      return(x)
+    }
+    )
+    
+    poblacion <- seleccion_supervivientes(poblacion = poblacion,
+                                          nueva.poblacion = nueva.poblacion,
+                                          param)
+    
+    
+    traza.fitness[[i]] <- sapply(poblacion, `[[`, "fitness")
+    print(min(traza.fitness[[i]]))
+  
   }
-  )
-
-
-num.iter <- 100
-for (i in 1:num.iter){
-  ## DUDA: primero mutación o recombinación?
-  nueva.poblacion <- replicate(param$lambda, recombinacion(poblacion, param), simplify = FALSE)
-  
-  nueva.poblacion <- lapply(nueva.poblacion, mutacion, param = param)
-  
-  nueva.poblacion <- lapply(nueva.poblacion, function(x){
-    x$fitness <- param$funcion(x$x)
-    return(x)
-  }
-  )
-  
-  poblacion <- seleccion_supervivientes(poblacion = poblacion,
-                                        nueva.poblacion = nueva.poblacion,
-                                        param)
-  
-  print(min(sapply(poblacion, `[[`, "fitness")))
 }
 
+estrategia_evolutiva(param)
+return(list(traza.fitness = traza.fitness, 
+            poblacion.final = poblacion))
 
 
 
