@@ -1,0 +1,44 @@
+---
+title: "Estrategias evolutivas"
+output: html_notebook
+---
+
+
+# Introducción
+
+Los algoritmos del área de la computación evolutiva tratan de resolver problemas de diversa índole sin que se necesite asumir demasiadas hipótesis para su aplicación. Los algoritmos más clásicos de métodos numéricos para la resolución de problemas de optimización suelen tener unas hipótesis asociadas que en la práctica son difíciles de cumplir. Por ejemplo, el algoritmo del descenso del gradiente exige que la función sobre la que se aplique sea diferenciable. Otras hipótesis pueden ser la concavidad o convexidad, continuidad, problemas con los mínimos o máximos locales, etcétera. 
+
+Sin embargo, en funciones que pueden ser muy complejas o en problemas en los que se modelice la realidad, es frecuente que estas hipótesis no puedan aplicarse y, por tanto, haya que buscar algoritmos lo más *agnósticos* posibles. Es el caso de las estrategias evolutivas. 
+
+# Definición del problema
+
+El objetivo es el de evaluar el comportamiento de estrategias evolutivas en la optimización de:
+
+- **función suma de powell**.
+- **función Nº4 de Xin-She Yang**.
+
+Estas dos funciones son lo suficientemente complejas como para que no se puedan aplicar algoritmos habituales de métodos numéricos.
+
+## Función suma de Powell
+
+La función suma de Powel está definida por la expresión
+
+$$
+f(\bar{x}) = \sum_{i = 1}^n |x_i|^{i+1}
+$$
+
+donde $\bar{x} = (x_1, x_2, \ldots, x_n)$, siendo $-1 \leq x_i \leq 1$, $i = 1, \ldots,n$. Esta función tiene como propiedades:
+
+- multi-dimensional
+- continua
+- convexa
+- no-diferenciable
+- unimodal
+
+Podemos representar la función en el caso en el que $\bar{x} \in \mathbb{R}^2$.
+
+
+
+# Discusión
+
+Las estrategias evolutivas nos sirven para resolver problemas complejos. No obstante, si la función o el problema a optimizar cumple las hipótesis de estos algoritmos, estos tendrán un comportamiento mejor que el que pueda tener una estrategia evolutiva puesto que se aprovechan de la estructura de la función para mejorar el proceso de optimización. Por ello, hay que tener en cuenta la naturaleza del problema que se tiene entre manos para saber qué tipo de algoritmo sería el adecuado.
