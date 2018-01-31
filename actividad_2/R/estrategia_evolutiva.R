@@ -91,8 +91,8 @@ seleccion_supervivientes <- function(poblacion,
 generacion_individuo <- function(param) {
   individuo <- list()
   individuo$x <- runif(param$n.x, param$x.min, param$x.max)
-  individuo$sigma <- runif(param$n.sigma, min = 1, max = 10)
-  individuo
+  individuo$sigma <- runif(param$n.sigma, param$sigma.min, param$sigma.max)
+  return(individuo)
 }
 
 generacion_poblacion <- function(param) {
@@ -112,20 +112,18 @@ estrategia_evolutiva <- function(param) {
                                   }
                       )
   
-  
-  num.iter <- 100
-  traza.fitness <- vector("list", num.iter)
-  for (i in 1:num.iter){
-    ## DUDA: primero mutación o recombinación?
+  traza.fitness <- vector("list", length = param$num.iter)
+  for (i in seq(param$num.iter)){
     nueva.poblacion <- replicate(param$lambda, recombinacion(poblacion, param), simplify = FALSE)
     
     nueva.poblacion <- lapply(nueva.poblacion, mutacion, param = param)
     
-    nueva.poblacion <- lapply(nueva.poblacion, function(x){
-      x$fitness <- param$funcion(x$x)
-      return(x)
-    }
-    )
+    nueva.poblacion <- lapply(nueva.poblacion, 
+                              function(x){
+                                x$fitness <- param$funcion(x$x)
+                                return(x)
+                                }
+                              )
     
     poblacion <- seleccion_supervivientes(poblacion = poblacion,
                                           nueva.poblacion = nueva.poblacion,

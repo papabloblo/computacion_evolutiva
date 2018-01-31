@@ -11,6 +11,10 @@ param <- list(n.x = 5,
               
               x.min = -1,
               x.max = 1,
+              
+              sigma.min = 1,
+              sigma.max = 10,
+              
               num.iter = 1000,
               
               lambda = 200,
@@ -29,7 +33,6 @@ param <- list(n.x = 5,
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
-
 resultados$param <- param
 
 id <- "powell_3_,"
@@ -45,6 +48,10 @@ param <- list(n.x = 5,
               
               x.min = -1,
               x.max = 1,
+              
+              sigma.min = 1,
+              sigma.max = 10,
+              
               num.iter = 1000,
               
               lambda = 200,
@@ -79,6 +86,10 @@ param <- list(n.x = 5,
               
               x.min = -1,
               x.max = 1,
+              
+              sigma.min = 1,
+              sigma.max = 10,
+              
               num.iter = 1000,
               
               lambda = 200,
