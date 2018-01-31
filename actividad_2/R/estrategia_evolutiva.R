@@ -91,7 +91,7 @@ seleccion_supervivientes <- function(poblacion,
 generacion_individuo <- function(param) {
   individuo <- list()
   individuo$x <- runif(param$n.x, param$x.min, param$x.max)
-  individuo$sigma <- rnorm(param$n.sigma, mean = 0, sd = 1)
+  individuo$sigma <- runif(param$n.sigma, min = 1, max = 10)
   individuo
 }
 
