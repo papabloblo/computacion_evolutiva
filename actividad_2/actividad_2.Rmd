@@ -37,6 +37,166 @@ donde $\bar{x} = (x_1, x_2, \ldots, x_n)$, siendo $-1 \leq x_i \leq 1$, $i = 1, 
 
 Podemos representar la función en el caso en el que $\bar{x} \in \mathbb{R}^2$.
 
+```{r}
+library(plot3D)
+source("funciones_a_optimizar.R")
+
+x <- seq(-1, 1, length.out=50)
+y <- x
+M <- mesh(x, y)
+
+alpha <- M$x
+beta <- M$y
+
+a <- cbind(as.vector(alpha), as.vector(beta))
+
+z <- apply(a, 1, suma_powell)
+
+b <- matrix(z, nrow = 50, ncol = 50)
+
+par(mfrow = c(1, 2))
+surf3D(x      = alpha,
+       y      = beta,
+       z      = b,
+       colkey = FALSE,
+       bty    = "b2",
+       main   = "Función suma de Powell ",
+       theta = 90)
+
+surf3D(x      = alpha,
+       y      = beta,
+       z      = b,
+       colkey = FALSE,
+       bty    = "b2",
+       #main   = "Función suma de Powell ",
+       theta = 90,
+       phi = 0)
+par(mfrow = c(1, 1))
+```
+
+A la vista de los gráficos, esta función presenta un mínimo global que se alcanza en $\bar{x}^* = (0,0)$ tomando $f(\bar{x}^* ) = 0$.
+
+## Función Nº 4 de Xin-She Yang
+
+La función Nº 4 de Xin-She Yang tiene como expresión
+
+$$
+f(\bar{x}) = \left( \sum_{i=1}^n sin^2(x_i) - exp\left(-\sum_{i=1}^nx_i^2\right)\right)\cdot exp\left(-\sum_{i=1}^nsin^2(\sqrt{|x_i|})\right)
+$$
+
+Esta función es:
+
+- No convexa.
+- No diferenciable.
+
+
+```{r}
+
+x <- seq(-10, 10, length.out=50)
+y <- x
+M <- mesh(x, y)
+
+alpha <- M$x
+beta <- M$y
+
+a <- cbind(as.vector(alpha), as.vector(beta))
+
+z <- apply(a, 1, xin_she_yang_4)
+
+b <- matrix(z, nrow = 50, ncol = 50)
+
+par(mfrow = c(1, 2))
+surf3D(x      = alpha,
+       y      = beta,
+       z      = b,
+       colkey = FALSE,
+       bty    = "b2",
+       main   = "Función suma de Powell ")
+
+surf3D(x      = alpha,
+       y      = beta,
+       z      = b,
+       colkey = FALSE,
+       bty    = "b2",
+       #main   = "Función Nº 4 de Xin-She Yang",
+       theta = 90,
+       phi = 0)
+par(mfrow = c(1, 1))
+```
+
+
+En el caso de $\mathbb{R}^2$, se ve que existe una gran cantidad de mínimos locales pero solo un mínimo global que se alcanza en $\bar{x}^* = (0,0)$ tomando $f(\bar{x}^* ) = -1$.
+
+# Descripción de Estrategia Evolutiva
+
+# Implementación
+
+
+# Discusión de resultados
+
+A continuación se detallan los resultados obtenidos al aplicar los algoritmos de EStrategias evolutivas sobre las funciones de suma de Powell y la Nº 4 de Xin-She Yang.
+
+## Función suma de Powell
+
+```{r}
+source("R/graficos.R")
+
+resultados <- readRDS("resultados/powell_3_,")
+resultados <- grafico_progreso(resultados)
+resultados %>%
+  #filter(iteracion <= 20) %>%
+  ggplot(aes(x = iteracion,
+             y = fitness,
+             group = id_ejecucion)) +
+  geom_line() + 
+  labs(caption = "Gráfico de progreso")
+```
+
+En el gráfico anterior se puede ver que en muy pocas iteraciones se consigue llegar a una solución estable.
+
+```{r}
+resultados %>%
+  filter(iteracion <= 20) %>%
+  ggplot(aes(x = iteracion,
+             y = fitness,
+             group = id_ejecucion)) +
+  geom_line() + 
+  labs(caption = "Gráfico de progreso")
+```
+
+Puede verse que, en un primer momento, el descenso en la función objetivo es muy abrupto. Para obtener una mejor visión del problema, vamos a representar la ganancia porcentual entre dos iteraciones, es decir,
+$$
+ganacia(i) = \frac{f_i - f_{i-1}}{f_{i-1}}
+$$
+
+```{r}
+resultados <- resultados %>% group_by(id_ejecucion) %>% mutate(inc_fitness = abs(fitness - lag(fitness))/lag(fitness))
+
+resultados %>%
+  # filter(iteracion <= 100) %>%
+  ggplot(aes(x = iteracion,
+             y = inc_fitness,
+             # group = id_ejecucion
+             )) +
+  geom_smooth() + 
+  labs(caption = "Gráfico de progreso")
+```
+
+
+En el orden de 5 iteraciones, el algoritmo consigue obtener un valor estable. Si hacemos *zoom* sobre lo que sucede a partir de la iteración $5$:
+
+```{r}
+grafico_progreso(resultados) %>%
+  filter(iteracion >= 10, iteracion <= 50) %>%
+  ggplot(aes(x = iteracion,
+             y = fitness,
+             group = id_ejecucion)) +
+  geom_line() + 
+  labs(caption = "Gráfico de progreso")
+```
+
+
+## Función Nº 4 de Xin-She Yang
 
 
 # Discusión
