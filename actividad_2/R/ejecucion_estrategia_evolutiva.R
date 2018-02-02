@@ -124,6 +124,10 @@ param <- list(n.x = 5,
               
               x.min = -1,
               x.max = 1,
+              
+              sigma.min = 1,
+              sigma.max = 10,
+              
               num.iter = 1000,
               
               lambda = 200,
@@ -163,6 +167,10 @@ param <- list(n.x = 5,
               
               x.min = -10,
               x.max = 10,
+              
+              sigma.min = 1,
+              sigma.max = 10,
+              
               num.iter = 1000,
               
               lambda = 200,
@@ -197,6 +205,10 @@ param <- list(n.x = 5,
               
               x.min = -10,
               x.max = 10,
+              
+              sigma.min = 1,
+              sigma.max = 10,
+              
               num.iter = 1000,
               
               lambda = 200,
@@ -231,6 +243,10 @@ param <- list(n.x = 5,
               
               x.min = -10,
               x.max = 10,
+              
+              sigma.min = 1,
+              sigma.max = 10,
+              
               num.iter = 1000,
               
               lambda = 200,
@@ -265,6 +281,9 @@ param <- list(n.x = 5,
               
               x.min = -10,
               x.max = 10,
+              sigma.min = 1,
+              sigma.max = 10,
+              
               num.iter = 1000,
               
               lambda = 200,
