@@ -27,7 +27,7 @@ $$
 f(\bar{x}) = \sum_{i = 1}^n |x_i|^{i+1}
 $$
 
-donde $\bar{x} = (x_1, x_2, \ldots, x_n)$, siendo $-1 \leq x_i \leq 1$, $i = 1, \ldots,n$. Esta función tiene como propiedades:
+donde $\bar{x} = (x_1, x_2, \ldots, x_n)$, siendo $-1 \leq x_i \leq 1$, $i = 1, \ldots,n$. Esta función tiene como propiedades ser:
 
 - multi-dimensional
 - continua
@@ -37,7 +37,7 @@ donde $\bar{x} = (x_1, x_2, \ldots, x_n)$, siendo $-1 \leq x_i \leq 1$, $i = 1, 
 
 Podemos representar la función en el caso en el que $\bar{x} \in \mathbb{R}^2$.
 
-```{r}
+```{r echo=FALSE}
 library(plot3D)
 source("funciones_a_optimizar.R")
 
@@ -66,7 +66,7 @@ surf3D(x      = alpha,
 surf3D(x      = alpha,
        y      = beta,
        z      = b,
-       colkey = FALSE,
+       #colkey = FALSE,
        bty    = "b2",
        #main   = "Función suma de Powell ",
        theta = 90,
@@ -74,7 +74,7 @@ surf3D(x      = alpha,
 par(mfrow = c(1, 1))
 ```
 
-A la vista de los gráficos, esta función presenta un mínimo global que se alcanza en $\bar{x}^* = (0,0)$ tomando $f(\bar{x}^* ) = 0$.
+Esta función presenta un mínimo global que se alcanza en $\bar{x}^* = (0,0)$ tomando $f(\bar{x}^* ) = 0$.
 
 ## Función Nº 4 de Xin-She Yang
 
@@ -90,7 +90,7 @@ Esta función es:
 - No diferenciable.
 
 
-```{r}
+```{r echo=FALSE}
 
 x <- seq(-10, 10, length.out=50)
 y <- x
@@ -134,11 +134,27 @@ En el caso de $\mathbb{R}^2$, se ve que existe una gran cantidad de mínimos loc
 
 # Discusión de resultados
 
-A continuación se detallan los resultados obtenidos al aplicar los algoritmos de EStrategias evolutivas sobre las funciones de suma de Powell y la Nº 4 de Xin-She Yang.
+A continuación se detallan los resultados obtenidos al aplicar los algoritmos de estrategias evolutivas sobre las funciones de suma de Powell y la Nº 4 de Xin-She Yang.
+
+Para ambas funciones se van a ejecutar estrategias evolutivas cuyas configuraciones serán:
+
+1. problema con dimensión $5$: $\bar{x} = (x_1, \ldots, x_5)$.
+2. 
 
 ## Función suma de Powell
 
-```{r}
+### Configución 1
+
+Estas ejecuciones se han realizado con las siguientes características:
+
+- mutación no correlacionada de paso único,
+- estrategia de selección de supervivientes de tipo $(\lambda, \mu) = (30, 200)$,
+- $1000$ generaciones (iteraciones),
+- $20$ ejecuciones independientes
+
+A contunuación se muestra la gráfica de progreso obtenida de la ejecución del algoritmo:
+
+```{r echo=FALSE}
 source("R/graficos.R")
 
 resultados <- readRDS("resultados/powell_3_,")
@@ -152,7 +168,7 @@ resultados %>%
   labs(caption = "Gráfico de progreso")
 ```
 
-En el gráfico anterior se puede ver que en muy pocas iteraciones se consigue llegar a una solución estable.
+La escala del gráfico dificulta obtener conclusiones. Si hacemos *zoom* sobre las 20 primeras iteraciones del algoritmo, comprobamos el abrupto descenso que sucede en las primeras 10 iteraciones.
 
 ```{r}
 resultados %>%
@@ -164,24 +180,48 @@ resultados %>%
   labs(caption = "Gráfico de progreso")
 ```
 
-Puede verse que, en un primer momento, el descenso en la función objetivo es muy abrupto. Para obtener una mejor visión del problema, vamos a representar la ganancia porcentual entre dos iteraciones, es decir,
+```{r}
+resultados %>%
+  filter(iteracion > 20, iteracion < 50) %>%
+  ggplot(aes(x = iteracion,
+             y = fitness,
+             group = id_ejecucion)) +
+  geom_line() + 
+  labs(caption = "Gráfico de progreso")
+```
+
+En la representación del progreso de la iteración $20$ hasta la $50$, el algoritmo comienza a comportarse de manera herrática, comportamiento que también suede si representamos de la iteración $20$ hasta las 1000 
+
+```{r}
+resultados %>%
+  filter(iteracion > 20) %>%
+  ggplot(aes(x = iteracion,
+             y = fitness,
+             group = id_ejecucion)) +
+  geom_line() + 
+  labs(caption = "Gráfico de progreso")
+```
+
+Para obtener una mejor visión del problema, vamos a representar la ganancia porcentual entre dos iteraciones, es decir,
+
 $$
 ganacia(i) = \frac{f_i - f_{i-1}}{f_{i-1}}
 $$
 
 ```{r}
-resultados <- resultados %>% group_by(id_ejecucion) %>% mutate(inc_fitness = abs(fitness - lag(fitness))/lag(fitness))
-
-resultados %>%
-  # filter(iteracion <= 100) %>%
+resultados %>% 
+  group_by(id_ejecucion) %>% 
+  mutate(inc_fitness = abs(fitness - lag(fitness))/lag(fitness)) %>% 
+  filter(iteracion <= 50) %>%
   ggplot(aes(x = iteracion,
-             y = inc_fitness,
-             # group = id_ejecucion
+             y = inc_fitness
              )) +
-  geom_smooth() + 
+  geom_line(aes(group = id_ejecucion), alpha = 0.5) + 
+  geom_smooth(color = "firebrick") +
   labs(caption = "Gráfico de progreso")
 ```
 
+En un problema en el que desconocemos las características de la función de *fitness* que queremos optimizar, es imposible poder saber lo precisa que es la solución propuesta. Sin embargo, en nuestro caso conocemos las propiedades de la función suma de Powell, y, al conocer que el mínimo se alcanza en $\bar{x}^* = \bar{0}$ siendo $f(\bar{x}^*) = 0$, podemos saber cómo de próxima es la solución obtenida a la solución real y poder definir un umbral de error para el que podemos considerar que el problema ha sido resuelto. La decisión del umbral es completamente arbitraria y dependerá del problema que se tenga entre manos. Por supuesto, cuanto menor sea la tolerancia permitida, más tardará el algoritmo en satisfacer la condición. En este caso, consideraremos que el algoritmo ha solucionado el problema cuando se obtenga que $|f(x)| \leq 10^{-6}$
 
 En el orden de 5 iteraciones, el algoritmo consigue obtener un valor estable. Si hacemos *zoom* sobre lo que sucede a partir de la iteración $5$:
 

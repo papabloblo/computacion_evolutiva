@@ -1,6 +1,7 @@
 
 # Suma de powell ----------------------------------------------------------
 
+source("actividad_2/R/estrategia_evolutiva.R")
 
 # Apartado 3 --------------------------------------------------------------
 
@@ -29,10 +30,14 @@ param <- list(n.x = 5,
               
               tau1 = 1/sqrt(2*5),
               tau2 = 0,
-              epsilon = 0.01
+              epsilon = 0.001
 )
 
-resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
+set.seed(123)
+system.time(
+  resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)  
+)
+
 resultados$param <- param
 
 id <- "powell_3_,"
@@ -66,7 +71,7 @@ param <- list(n.x = 5,
               
               tau1 = 1/sqrt(2*5),
               tau2 = 0,
-              epsilon = 0.01
+              epsilon = 0.001
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
@@ -104,7 +109,7 @@ param <- list(n.x = 5,
               
               tau1 = 1/sqrt(2*5),
               tau2 = 1/sqrt(2*sqrt(5)),
-              epsilon = 0.01
+              epsilon = 0.001
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
@@ -142,7 +147,7 @@ param <- list(n.x = 5,
               
               tau1 = 1/sqrt(2*5),
               tau2 = 1/sqrt(2*sqrt(5)),
-              epsilon = 0.01
+              epsilon = 0.001
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
@@ -185,7 +190,7 @@ param <- list(n.x = 5,
               
               tau1 = 1/sqrt(2*5),
               tau2 = 0,
-              epsilon = 0.01
+              epsilon = 0.001
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
@@ -223,7 +228,7 @@ param <- list(n.x = 5,
               
               tau1 = 1/sqrt(2*5),
               tau2 = 0,
-              epsilon = 0.01
+              epsilon = 0.001
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
@@ -261,7 +266,7 @@ param <- list(n.x = 5,
               
               tau1 = 1/sqrt(2*5),
               tau2 = 1/sqrt(2*sqrt(5)),
-              epsilon = 0.01
+              epsilon = 0.001
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
@@ -298,7 +303,7 @@ param <- list(n.x = 5,
               
               tau1 = 1/sqrt(2*5),
               tau2 = 1/sqrt(2*sqrt(5)),
-              epsilon = 0.01
+              epsilon = 0.001
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)

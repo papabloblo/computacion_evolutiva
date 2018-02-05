@@ -3,7 +3,7 @@ suma_powell <- function(x){
 }
 
 
-suma_powell(1:2)
+suma_powell(c(1, -1, 1, 1, 1))
 
 
 xin_she_yang_4 <- function(x){

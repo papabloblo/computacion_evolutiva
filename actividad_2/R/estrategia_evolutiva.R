@@ -17,6 +17,12 @@ mutacion <- function(individuo,
   
   x <- individuo$x + individuo$sigma * rnorm(length(individuo$x))
   
+  x <- ifelse(x > param$x.max, 
+              param$x.max, 
+              ifelse(x < param$x.min,
+                     param$x.min,
+                     x))
+  
   return(list(x = x, sigma = sigma))
 }
 
