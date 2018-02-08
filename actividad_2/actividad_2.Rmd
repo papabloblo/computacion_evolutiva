@@ -136,23 +136,75 @@ En el caso de $\mathbb{R}^2$, se ve que existe una gran cantidad de mínimos loc
 
 A continuación se detallan los resultados obtenidos al aplicar los algoritmos de estrategias evolutivas sobre las funciones de suma de Powell y la Nº 4 de Xin-She Yang.
 
-Para ambas funciones se van a ejecutar estrategias evolutivas cuyas configuraciones serán:
+Ambas funciones se atacarán sobre un espacio de dimensión $5$, es decir, se tratará de resolver el problema
+$$
+argmin \,f(\bar{x})
+$$
 
-1. problema con dimensión $5$: $\bar{x} = (x_1, \ldots, x_5)$.
-2. 
+tal que $\bar{x} = (x_1, \ldots, x_5)$.
+
+Las estrategias evolutivas, como la gran mayoría del algoritmos utilizados para la optimización, llevan asociadas una serie de parámetros y configuraciones que pueden cambiar, por ejemplo, la eficiencia con la que se resuelva el problema. En nuestro caso, se va a abordar el problema con las siguientes configuraciones:
+
+- **Configuración 1:**
+    - *Tipo de mutación:* no correlacionada de paso único.
+    - *Selección de supervivientes*: $(\mu, \lambda) = (30, 200)$
+- **Configuración 2:**
+    - *Tipo de mutación:* no correlacionada de $n$ pasos.
+    - *Selección de supervivientes*: $(\mu, \lambda) = (30, 200)$
+- **Configuración 3:**
+    - *Tipo de mutación:* no correlacionada de paso único.
+    - *Selección de supervivientes*: $(\mu + \lambda) = (30 + 200)$
+- **Configuración 4:**
+    - *Tipo de mutación:* no correlacionada de $n$ pasos.
+    - *Selección de supervivientes*: $(\mu + \lambda) = (30 + 200)$
+
+Todas las configuraciones tendrán en común:
+
+- $20$ ejecuciones independientes del algoritmo.
+- $1000$ generaciones en cada ejecución.
+
+Por supuesto, hay más parámetros que pueden intervenir en las estrategias evolutivas y que serán tratados también las ejecuciones.
 
 ## Función suma de Powell
 
-### Configución 1
+### Configuración 1
 
-Estas ejecuciones se han realizado con las siguientes características:
+Para esta ejecución, es necesario ejecutar el siguiente código conforme a la implementación realizada:
 
-- mutación no correlacionada de paso único,
-- estrategia de selección de supervivientes de tipo $(\lambda, \mu) = (30, 200)$,
-- $1000$ generaciones (iteraciones),
-- $20$ ejecuciones independientes
+```{r, eval=FALSE}
+param <- list(n.x = 5,
+              n.sigma = 1,
+              tam.poblacion = 30,
+              
+              x.min = -1,
+              x.max = 1,
+              
+              sigma.min = 1,
+              sigma.max = 10,
+              
+              num.iter = 1000,
+              
+              lambda = 200,
+              mu = 30,
+              estrategia = ",",
+              min = TRUE,
+              funcion = suma_powell,
+              
+              global = TRUE,
+              recomb.x = "discreta",
+              recomb.sigma = "discreta",
+              
+              tau1 = 1/sqrt(2*5),
+              tau2 = 0,
+              epsilon = 0.001
+)
 
-A contunuación se muestra la gráfica de progreso obtenida de la ejecución del algoritmo:
+set.seed(123)
+resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)  
+```
+
+
+A continuación se muestra la **gráfica de progreso** obtenida de la ejecución del algoritmo, es decir, se representa una línea para cada una de las $20$ ejecuciones que pueda relacionar el menor valor de la función de fitness obtenido en cada iteración:
 
 ```{r echo=FALSE}
 source("R/graficos.R")
@@ -165,10 +217,12 @@ resultados %>%
              y = fitness,
              group = id_ejecucion)) +
   geom_line() + 
-  labs(caption = "Gráfico de progreso")
+  labs(caption = "Gráfico de progreso",
+       x = "Iteración",
+       title = "Gráfico de progreso para la configuración 1")
 ```
 
-La escala del gráfico dificulta obtener conclusiones. Si hacemos *zoom* sobre las 20 primeras iteraciones del algoritmo, comprobamos el abrupto descenso que sucede en las primeras 10 iteraciones.
+A la vista de este gráfico, se aprecia una disminución de la función de fitness bastante acusada en las primeras iteraciones. Sin embargo, la escala del gráfico dificulta obtener conclusiones. Si hacemos *zoom* sobre las 20 primeras iteraciones del algoritmo, comprobamos el abrupto descenso que sucede en las diez primeras.
 
 ```{r}
 resultados %>%
@@ -177,38 +231,47 @@ resultados %>%
              y = fitness,
              group = id_ejecucion)) +
   geom_line() + 
-  labs(caption = "Gráfico de progreso")
+  labs(caption = "Gráfico de progreso",
+       x = "Iteración",
+       title = "Gráfico de progreso para la configuración 1", 
+       subtitle = "Restringido a las 20 primeras iteraciones")
 ```
 
-```{r}
-resultados %>%
-  filter(iteracion > 20, iteracion < 50) %>%
-  ggplot(aes(x = iteracion,
-             y = fitness,
-             group = id_ejecucion)) +
-  geom_line() + 
-  labs(caption = "Gráfico de progreso")
-```
 
-En la representación del progreso de la iteración $20$ hasta la $50$, el algoritmo comienza a comportarse de manera herrática, comportamiento que también suede si representamos de la iteración $20$ hasta las 1000 
 
-```{r}
-resultados %>%
-  filter(iteracion > 20) %>%
-  ggplot(aes(x = iteracion,
-             y = fitness,
-             group = id_ejecucion)) +
-  geom_line() + 
-  labs(caption = "Gráfico de progreso")
-```
+
+# ```{r}
+# resultados %>%
+#   filter(iteracion > 20, iteracion < 50) %>%
+#   ggplot(aes(x = iteracion,
+#              y = fitness,
+#              group = id_ejecucion)) +
+#   geom_line() + 
+#   labs(caption = "Gráfico de progreso")
+# ```
+
+<!-- En la representación del progreso de la iteración $20$ hasta la $50$, el algoritmo comienza a comportarse de manera herrática, comportamiento que también suede si representamos de la iteración $20$ hasta las 1000  -->
+
+<!-- ```{r} -->
+<!-- resultados %>% -->
+<!--   filter(iteracion > 50) %>% -->
+<!--   ggplot(aes(x = iteracion, -->
+<!--              y = fitness, -->
+<!--              group = id_ejecucion)) + -->
+<!--   geom_line() +  -->
+<!--   labs(caption = "Gráfico de progreso") -->
+<!-- ``` -->
 
 Para obtener una mejor visión del problema, vamos a representar la ganancia porcentual entre dos iteraciones, es decir,
 
 $$
 ganacia(i) = \frac{f_i - f_{i-1}}{f_{i-1}}
 $$
+siendo $f_i$ el mínimo valor de la función de fitness obtenido en la iteración $i$-ésima.
 
-```{r}
+Si representamos esta función para las primeras $50$ iteraciones, obtenemos el siguiente gráfico
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 resultados %>% 
   group_by(id_ejecucion) %>% 
   mutate(inc_fitness = abs(fitness - lag(fitness))/lag(fitness)) %>% 
@@ -216,18 +279,55 @@ resultados %>%
   ggplot(aes(x = iteracion,
              y = inc_fitness
              )) +
-  geom_line(aes(group = id_ejecucion), alpha = 0.5) + 
+  geom_line(aes(group = id_ejecucion), alpha = 0.4) + 
   geom_smooth(color = "firebrick") +
-  labs(caption = "Gráfico de progreso")
+  labs(caption = "Gráfico de progreso",
+       x = "Iteración",
+       y = "Ganancia")
 ```
 
-En un problema en el que desconocemos las características de la función de *fitness* que queremos optimizar, es imposible poder saber lo precisa que es la solución propuesta. Sin embargo, en nuestro caso conocemos las propiedades de la función suma de Powell, y, al conocer que el mínimo se alcanza en $\bar{x}^* = \bar{0}$ siendo $f(\bar{x}^*) = 0$, podemos saber cómo de próxima es la solución obtenida a la solución real y poder definir un umbral de error para el que podemos considerar que el problema ha sido resuelto. La decisión del umbral es completamente arbitraria y dependerá del problema que se tenga entre manos. Por supuesto, cuanto menor sea la tolerancia permitida, más tardará el algoritmo en satisfacer la condición. En este caso, consideraremos que el algoritmo ha solucionado el problema cuando se obtenga que $|f(x)| \leq 10^{-6}$
+Se aprecia una ganancia en torno al $50%$ en las $20$ primeras iteraciones para luego convertirse en un patrón ruidoso, una posible señal de que el algoritmo ha dejado de ser capaz de realizar una mejora clara de la solución anterior y de ahí ese comportamiento errático.
 
-En el orden de 5 iteraciones, el algoritmo consigue obtener un valor estable. Si hacemos *zoom* sobre lo que sucede a partir de la iteración $5$:
+En un problema en el que desconocemos las características de la función de *fitness* que queremos optimizar, es imposible poder saber lo precisa que es la solución propuesta. Sin embargo, en nuestro caso conocemos las propiedades de la función suma de Powell, en particular sabemos que el mínimo se alcanza en $\bar{x}^* = \bar{0}$ siendo $f(\bar{x}^*) = 0$. Por lo tanto, esto nos sirve para saber **cómo de próxima es la solución obtenida a la solución real y poder definir un umbral de error para el que podemos considerar que el problema ha sido resuelto**. La decisión del umbral es completamente arbitraria y dependerá del problema que se tenga entre manos. Por supuesto, cuanto menor sea la tolerancia permitida, más tardará el algoritmo en satisfacer la condición. Para este estudio **consideraremos que el algoritmo ha solucionado el problema cuando se obtenga que $|f(x)| \leq 10^{-10}$.** Con este umbral obtenemos los siguientes estadísticos
+
+
+```{r message=FALSE, warning=FALSE}
+res <- resultados %>% 
+  group_by(id_ejecucion) %>% 
+  filter(fitness < 10**-7) %>% 
+  top_n(1, wt = fitness) 
+
+res %>% 
+  ungroup() %>% 
+  summarise(min = min(iteracion),
+            media = mean(iteracion),
+            mediana = median(iteracion),
+            max = max(iteracion),
+            desviacion_estandar = sd(iteracion))
+```
+
+En media, el algoritmo tarda $537.25$ iteraciones en alcanzar la solución al problema aunque con una desviación típica amplia, de $280.0336$ iteraciones. Podemos visualizar esta información como:
 
 ```{r}
-grafico_progreso(resultados) %>%
-  filter(iteracion >= 10, iteracion <= 50) %>%
+res %>% 
+  ggplot(aes(x = iteracion, y = fitness)) + 
+  geom_point()
+```
+
+Una métrica útil para describir el comportamiento del algoritmo es el **ratio de éxito** o **SR** (*success rate* por sus siglas en inglés), es decir, de las ejecuciones realizadas, **en cuántas se obtiene un valor por debajo del umbral de error**. Con el umbral definido de $10^{-10}$, en nuestro caso se obtienen
+
+```{r}
+res
+```
+
+
+### Mutación no correlacionada de n pasos
+
+```{r}
+resultados <- readRDS("resultados/powell_4_,")
+resultados <- grafico_progreso(resultados)
+resultados %>%
+  #filter(iteracion <= 20) %>%
   ggplot(aes(x = iteracion,
              y = fitness,
              group = id_ejecucion)) +

@@ -19,18 +19,18 @@ param <- list(n.x = 5,
               num.iter = 1000,
               
               lambda = 200,
-              mu = 30, # ¿== tam.poblacion?
+              mu = 30,
               estrategia = ",",
               min = TRUE,
               funcion = suma_powell,
               
               global = TRUE,
               recomb.x = "discreta",
-              recomb.sigma = "discreta",
+              recomb.sigma = "intermedia",
               
               tau1 = 1/sqrt(2*5),
               tau2 = 0,
-              epsilon = 0.001
+              epsilon = 0.01
 )
 
 set.seed(123)
@@ -40,7 +40,7 @@ system.time(
 
 resultados$param <- param
 
-id <- "powell_3_,"
+id <- "powell_3_,_disc_interm_eps_001"
 
 saveRDS(resultados, file = paste0("actividad_2/resultados/", id))
 
@@ -67,18 +67,18 @@ param <- list(n.x = 5,
               
               global = TRUE,
               recomb.x = "discreta",
-              recomb.sigma = "discreta",
+              recomb.sigma = "intermedia",
               
               tau1 = 1/sqrt(2*5),
               tau2 = 0,
-              epsilon = 0.001
+              epsilon = 0.01
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
 
 resultados$param <- param
 
-id <- "powell_3_+"
+id <- "powell_3_+_disc_interm_eps_001"
 
 saveRDS(resultados, file = paste0("actividad_2/resultados/", id))
 
@@ -105,18 +105,18 @@ param <- list(n.x = 5,
               
               global = TRUE,
               recomb.x = "discreta",
-              recomb.sigma = "discreta",
+              recomb.sigma = "intermedia",
               
               tau1 = 1/sqrt(2*5),
               tau2 = 1/sqrt(2*sqrt(5)),
-              epsilon = 0.001
+              epsilon = 0.01
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
 
 resultados$param <- param
 
-id <- "powell_4_,"
+id <- "powell_4_,_disc_interm_eps_001"
 
 saveRDS(resultados, file = paste0("actividad_2/resultados/", id))
 
@@ -143,18 +143,18 @@ param <- list(n.x = 5,
               
               global = TRUE,
               recomb.x = "discreta",
-              recomb.sigma = "discreta",
+              recomb.sigma = "intermedia",
               
               tau1 = 1/sqrt(2*5),
               tau2 = 1/sqrt(2*sqrt(5)),
-              epsilon = 0.001
+              epsilon = 0.01
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
 
 resultados$param <- param
 
-id <- "powell_4_+"
+id <- "powell_4_+_disc_interm_eps_001"
 
 saveRDS(resultados, file = paste0("actividad_2/resultados/", id))
 
@@ -186,18 +186,18 @@ param <- list(n.x = 5,
               
               global = TRUE,
               recomb.x = "discreta",
-              recomb.sigma = "discreta",
+              recomb.sigma = "intermedia",
               
               tau1 = 1/sqrt(2*5),
               tau2 = 0,
-              epsilon = 0.001
+              epsilon = 0.01
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
 
 resultados$param <- param
 
-id <- "xin_she_yang_4_3_,"
+id <- "xin_she_yang_4_3_,_disc_interm_eps_001"
 
 saveRDS(resultados, file = paste0("actividad_2/resultados/", id))
 
@@ -224,18 +224,18 @@ param <- list(n.x = 5,
               
               global = TRUE,
               recomb.x = "discreta",
-              recomb.sigma = "discreta",
+              recomb.sigma = "intermedia",
               
               tau1 = 1/sqrt(2*5),
               tau2 = 0,
-              epsilon = 0.001
+              epsilon = 0.01
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
 
 resultados$param <- param
 
-id <- "xin_she_yang_4_3_+"
+id <- "xin_she_yang_4_3_+_disc_interm_eps_001"
 
 saveRDS(resultados, file = paste0("actividad_2/resultados/", id))
 
@@ -262,18 +262,18 @@ param <- list(n.x = 5,
               
               global = TRUE,
               recomb.x = "discreta",
-              recomb.sigma = "discreta",
+              recomb.sigma = "intermedia",
               
               tau1 = 1/sqrt(2*5),
               tau2 = 1/sqrt(2*sqrt(5)),
-              epsilon = 0.001
+              epsilon = 0.01
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
 
 resultados$param <- param
 
-id <- "xin_she_yang_4_4_,"
+id <- "xin_she_yang_4_4_,_disc_interm_eps_001"
 
 saveRDS(resultados, file = paste0("actividad_2/resultados/", id))
 
@@ -299,18 +299,18 @@ param <- list(n.x = 5,
               
               global = TRUE,
               recomb.x = "discreta",
-              recomb.sigma = "discreta",
+              recomb.sigma = "intermedia",
               
               tau1 = 1/sqrt(2*5),
               tau2 = 1/sqrt(2*sqrt(5)),
-              epsilon = 0.001
+              epsilon = 0.01
 )
 
 resultados <- replicate(20, estrategia_evolutiva(param), simplify = FALSE)
 
 resultados$param <- param
 
-id <- "xin_she_yang_4_4_+"
+id <- "xin_she_yang_4_4_+_disc_interm_eps_001"
 
 saveRDS(resultados, file = paste0("actividad_2/resultados/", id))
 

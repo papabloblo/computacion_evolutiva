@@ -38,11 +38,13 @@ mutacion <- function(individuo,
 recombinacion <- function(poblacion, 
                           param){
   
-  poblacion <- lapply(poblacion, function(x){ 
-    x$fitness <- NULL
-    return(x)
-    }
-  )
+  poblacion <- lapply(poblacion, 
+                      function(x){ 
+                        x$fitness <- NULL
+                        return(x)
+                        }
+                      )
+  
   dim.x <- length(poblacion[[1]]$x)
   poblacion <- do.call(rbind, lapply(poblacion, unlist))
   dim.poblacion <- nrow(poblacion)
