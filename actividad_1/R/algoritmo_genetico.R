@@ -138,6 +138,7 @@ pruebas_ga <- function(num_pruebas = 10,
                        funcion_fitness,
 
                        genes_fijos,
+                       num_genes,
 
                        valores_mutacion,
 
@@ -149,12 +150,13 @@ pruebas_ga <- function(num_pruebas = 10,
                        max_iter,
                        print_each){
 
-  num_genes <- sum(is.na(genes_fijos))
-
+  # num_genes <- sum(is.na(genes_fijos))
 
   poblacion_inicial <- generacion_poblacion_ini(valores_posibles = valores_posibles,
-                                            num_genes = num_genes,
-                                            tam_poblacion = tam_poblacion)
+                                                num_genes = num_genes,
+                                                tam_poblacion = tam_poblacion,
+                                                num_genes_fijo = num_genes_fijo
+                                                )
 
   resultados <- parallel::mclapply(seq(num_pruebas),
                                    function(x)

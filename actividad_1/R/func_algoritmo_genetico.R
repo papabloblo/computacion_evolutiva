@@ -29,11 +29,20 @@ random_integer_representation <- function(valores, tam){
 #' @examples
 generacion_poblacion <- function(valores_posibles,
                                  num_genes,
-                                 tam_poblacion){
-  replicate(n = tam_poblacion,
-            random_integer_representation(valores_posibles, num_genes),
-            simplify = FALSE
-  )
+                                 tam_poblacion,
+                                 num_genes_fijo = TRUE){
+  
+  if (num_genes_fijo){
+    num_genes <- rep(num_genes, tam_poblacion)
+  } else {
+    num_genes <- sample(num_genes, size = tam_poblacion, replace = T)
+  }
+  
+  lapply(num_genes,
+         random_integer_representation,
+         valores = valores_posibles
+         )
+  
 }
 
 
