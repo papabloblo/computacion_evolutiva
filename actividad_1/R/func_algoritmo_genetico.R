@@ -106,7 +106,7 @@ seleccion_padres <- function(num_padres,
 one_point_crossover <- function(padres, prob_cruce){
   # Supongo que todos los padres tienen la misma longitud
   # Solo preparado para 2 PADRES
-  punto <- sample(seq_along(padres[[1]]), 1)
+  punto <- sample(min(sapply(padres, length)), 1)
   
   hijos <- list()
   if (runif(1) < prob_cruce && punto < length(padres[[1]])){
