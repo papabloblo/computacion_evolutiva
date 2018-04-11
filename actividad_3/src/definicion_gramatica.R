@@ -25,6 +25,21 @@ expr <- GrammarMap(c(1, 7, 106), grammar_def)
 x <- 10
 eval(as.expression(expr))
 
+set.seed(1234)
+poblacion <- generacion_poblacion(valores_posibles = 0:3,
+                                  num_genes = 500,
+                                  tam_poblacion = 10,
+                                  num_genes_fijo = T)
+
+
+
+
+
+
+lapply(poblacion,
+       GrammarMap,
+       grammar = grammar_def,
+       wrappings = 10)
 
 
 # Función fitness ---------------------------------------------------------

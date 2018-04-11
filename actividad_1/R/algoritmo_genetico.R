@@ -22,8 +22,6 @@ algoritmo_genetico <- function(poblacion_inicial,
 
                                funcion_fitness,
 
-                               genes_fijos,
-
                                valores_mutacion,
 
                                num_padres    = 2,
@@ -33,14 +31,24 @@ algoritmo_genetico <- function(poblacion_inicial,
                                tam_poblacion = 10,
 
                                max_iter      = 100,
-                               print_each    = 100
+                               print_each    = 100,
+                               
+                               a = 0,
+                               b = 5,
+                               
+                               N = 50,
+                               f = function(x) 6*x^2,
+                               f_reparacion = funcion_reparacion
                                ){
 
-  fitness <- lapply(poblacion_inicial,
-                    funcion_fitness,
-                    solucion_inicial = genes_fijos,
-                    ind_cuadricula = ind_cuadricula)
-
+  # fitness <- lapply(poblacion_inicial,
+  #                   funcion_fitness,
+  #                   solucion_inicial = genes_fijos,
+  #                   ind_cuadricula = ind_cuadricula)
+  # 
+  
+  fitness <- funcion_fitness(poblacion_inicial, a, b, N, f, f_reparacion)
+  
 
   traza <- list(iteracion = 1:max_iter,
                 fitness = list(unlist(fitness)),
@@ -75,11 +83,8 @@ algoritmo_genetico <- function(poblacion_inicial,
                                     valores_posibles = valores_mutacion
                                     )
 
-    fitness <- lapply(poblacion,
-                      funcion_fitness,
-                      ind_cuadricula = ind_cuadricula,
-                      solucion_inicial = genes_fijos)
-
+    fitness <- funcion_fitness(poblacion , a, b, N, f, f_reparacion)
+                  
     peor <- which(unlist(fitness) == max(unlist(fitness)))
     if (length(peor) > 1){
       # Se muestrea para el caso en el que haya empate.
@@ -90,7 +95,7 @@ algoritmo_genetico <- function(poblacion_inicial,
     fitness[[peor]] <- fitness_elitismo
 
     if (!(i %% print_each)){
-      cat("Iteración: ", i, "| Mejor valor de fitness: ", min(unlist(fitness)), "| Tiempo transcurrido: ", print(Sys.time() - ini))
+      cat("Iteración: ", i, "| Mejor valor de fitness: ", min(unlist(fitness)), "| Tiempo transcurrido: ", Sys.time() - ini, "\n")
     }
 
     traza$fitness[[i]] <- unlist(fitness)
