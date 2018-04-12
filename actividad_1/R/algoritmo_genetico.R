@@ -31,14 +31,7 @@ algoritmo_genetico <- function(poblacion_inicial,
                                tam_poblacion = 10,
 
                                max_iter      = 100,
-                               print_each    = 100,
-                               
-                               a = 0,
-                               b = 5,
-                               
-                               N = 50,
-                               f = function(x) 6*x^2,
-                               f_reparacion = funcion_reparacion
+                               print_each    = 100
                                ){
 
   # fitness <- lapply(poblacion_inicial,
@@ -47,7 +40,7 @@ algoritmo_genetico <- function(poblacion_inicial,
   #                   ind_cuadricula = ind_cuadricula)
   # 
   
-  fitness <- funcion_fitness(poblacion_inicial, a, b, N, f, f_reparacion)
+  fitness <- funcion_fitness(poblacion_inicial)
   
 
   traza <- list(iteracion = 1:max_iter,
@@ -83,7 +76,7 @@ algoritmo_genetico <- function(poblacion_inicial,
                                     valores_posibles = valores_mutacion
                                     )
 
-    fitness <- funcion_fitness(poblacion , a, b, N, f, f_reparacion)
+    fitness <- funcion_fitness(poblacion)
                   
     peor <- which(unlist(fitness) == max(unlist(fitness)))
     if (length(peor) > 1){
@@ -142,7 +135,6 @@ pruebas_ga <- function(num_pruebas = 10,
                        valores_posibles,
                        funcion_fitness,
 
-                       genes_fijos,
                        num_genes,
 
                        valores_mutacion,
@@ -151,12 +143,14 @@ pruebas_ga <- function(num_pruebas = 10,
                        prob_cruce,
                        tam_torneo,
                        prob_mutacion,
+                       
+                       num_genes_fijo,
 
                        max_iter,
                        print_each){
 
   # num_genes <- sum(is.na(genes_fijos))
-
+  
   poblacion_inicial <- generacion_poblacion_ini(valores_posibles = valores_posibles,
                                                 num_genes = num_genes,
                                                 tam_poblacion = tam_poblacion,
@@ -166,22 +160,20 @@ pruebas_ga <- function(num_pruebas = 10,
   resultados <- parallel::mclapply(seq(num_pruebas),
                                    function(x)
                                      algoritmo_genetico(
-                                       poblacion_inicial = poblacion_inicial,
-
+                                       poblacion_inicial,
+                                       
                                        funcion_fitness,
-
-                                       genes_fijos,
-
+                                       
                                        valores_mutacion,
-
+                                       
                                        num_padres,
                                        prob_cruce,
                                        tam_torneo,
                                        prob_mutacion,
-                                       tam_poblacion = tam_poblacion,
-
+                                       tam_poblacion,
+                                       
                                        max_iter,
-                                       print_each
+                                       print_each   
                                        )
                                    )
 

@@ -51,12 +51,12 @@ fitness_act_3 <- function(f,
   
 }
 
-funcion_fitness <- function(poblacion, a, b, N, f, f_reparacion){
+funcion_fitness <- function(poblacion, a, b, N, f, f_reparacion, wrappings){
   
   poblacion_inicial_decod <- mclapply(poblacion,
                                       GrammarMap,
                                       grammar = grammar_def,
-                                      wrappings = 10,
+                                      wrappings = wrappings,
                                       mc.cores = 10)
   
   terminales <- map_lgl(poblacion_inicial_decod,function(x) x$type != "NT")
