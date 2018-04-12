@@ -2,6 +2,10 @@
 library(gramEvol)
 library(purrr)
 library(parallel)
+
+source("actividad_1/R/func_algoritmo_genetico.R")
+source("actividad_1/R/algoritmo_genetico.R")
+
 # Definición de gramática -------------------------------------------------
 
 reglas_def <- list(expr = gsrule("<expr><op><expr>",
@@ -28,17 +32,15 @@ set.seed(1234)
 poblacion_inicial <- generacion_poblacion(valores_posibles = 0:3,
                                           num_genes = 50,
                                           tam_poblacion = 100,
-                                          num_genes_fijo = F)
+                                          num_genes_fijo = T)
 
-# Función fitness ---------------------------------------------------------
 
+
+# Función a integrar ------------------------------------------------------
 
 f <- function(x){
   6*x^2
 }
-
-
-
 
 
 F_integral <- function(x) eval(as.expression(expr))
