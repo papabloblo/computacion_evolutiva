@@ -125,7 +125,7 @@ resultados_f1 <- mapply(pruebas_ga,
                                                                            f = function(x) 6*x^2,
                                                                            
                                                                            f_reparacion = function(expr) 
-                                                                             funcion_reparacion(expr, 
+                                                                             f_reparacion(expr, 
                                                                                                 x = 0,
                                                                                                 f_x = 5),
                                                                            wrappings = 5
@@ -175,7 +175,7 @@ resultados_f2 <- parallel::mcmapply(pruebas_ga,
                                                                       f = function(x) 2/(x + 1)^2,
                                                                       
                                                                       f_reparacion = function(expr) 
-                                                                        funcion_reparacion(expr, 
+                                                                        f_reparacion(expr, 
                                                                                            x = 0,
                                                                                            f_x = -1)
                                                       ),
@@ -226,7 +226,7 @@ resultados_f3 <- parallel::mcmapply(pruebas_ga,
                                                                       f = function(x) (1/4)*(3*x^2 - 2*x + 1),
                                                                       
                                                                       f_reparacion = function(expr) 
-                                                                        funcion_reparacion(expr, 
+                                                                        f_reparacion(expr, 
                                                                                            x = 0,
                                                                                            f_x = -1/4)
                                                       ),
@@ -277,7 +277,7 @@ resultados_f4 <- parallel::mcmapply(pruebas_ga,
                                                                       f = function(x) (1/3)*exp(2*x) - exp(-6*x),
                                                                       
                                                                       f_reparacion = function(expr) 
-                                                                        funcion_reparacion(expr, 
+                                                                        f_reparacion(expr, 
                                                                                            x = 0,
                                                                                            f_x = 1/3)
                                                       ),
@@ -328,7 +328,7 @@ resultados_f5 <- parallel::mcmapply(pruebas_ga,
                                                                       f = function(x) log(1 + x) + x/(1+x),
                                                                       
                                                                       f_reparacion = function(expr) 
-                                                                        funcion_reparacion(expr, 
+                                                                        f_reparacion(expr, 
                                                                                            x = 0,
                                                                                            f_x = 0)
                                                       ),
@@ -379,7 +379,7 @@ resultados_f6 <- parallel::mcmapply(pruebas_ga,
                                                                       f = function(x) exp(x) * (sin(x) + cos(x)),
                                                                       
                                                                       f_reparacion = function(expr) 
-                                                                        funcion_reparacion(expr, 
+                                                                        f_reparacion(expr, 
                                                                                            x = 0,
                                                                                            f_x = 0)
                                                       ),
