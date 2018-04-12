@@ -2,6 +2,7 @@
 library(gramEvol)
 library(purrr)
 library(parallel)
+library(tidyverse)
 
 source("actividad_1/R/func_algoritmo_genetico.R")
 source("actividad_1/R/algoritmo_genetico.R")
@@ -94,7 +95,7 @@ grid <- data_frame(tam_poblacion = sample(10:50, size =  n, replace = TRUE),
 # F1 ----------------------------------------------------------------------
 
 ini <- Sys.time()
-resultados_f1 <- parallel::mcmapply(pruebas_ga,
+resultados_f1 <- mapply(pruebas_ga,
                                          num_pruebas              = 10,
                                          
                                          
@@ -126,15 +127,15 @@ resultados_f1 <- parallel::mcmapply(pruebas_ga,
                                                                            f_reparacion = function(expr) 
                                                                              funcion_reparacion(expr, 
                                                                                                 x = 0,
-                                                                                                f_x = 5)
+                                                                                                f_x = 5),
+                                                                           wrappings = 5
                                                            ),
                                                          
                                                          valores_posibles         = 0:3,
                                                          valores_mutacion         = 0:3
                                          )
                                          ,
-                                         SIMPLIFY = FALSE,
-                                         mc.cores = 10
+                                         SIMPLIFY = FALSE
                                          )
 
 fin <- Sys.time()

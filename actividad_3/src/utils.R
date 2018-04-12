@@ -79,7 +79,7 @@ F_integral <- function(x) eval(as.expression(expr))
 f_a_integrar <- function(x) eval(expression(6*x^2))
 
 
-funcion_reparacion <- function(expr, x = 0, f_x = 5){
+f_reparacion <- function(expr, x = 0, f_x = 5){
   y <- eval(as.expression(expr))
   alpha <- f_x - y
   
