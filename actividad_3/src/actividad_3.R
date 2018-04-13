@@ -93,59 +93,59 @@ grid <- data_frame(tam_poblacion = sample(10:50, size =  n, replace = TRUE),
 
 
 # F1 ----------------------------------------------------------------------
-
-ini <- Sys.time()
-resultados_f1 <- mapply(pruebas_ga,
-                                         num_pruebas              = 10,
-                                         
-                                         
-                                         num_padres               = 2,
-                                         
-                                         tam_poblacion            = grid$tam_poblacion,
-                                         prob_cruce               = grid$prob_cruce,
-                                         tam_torneo               = grid$tam_torneo,
-                                         prob_mutacion            = grid$prob_mutacion,
-                                         
-                                         num_genes               = grid$num_genes,
-                                         num_genes_fijo          = grid$num_genes_fijo,
-                                         
-                                         max_iter                 = 500,
-                                         print_each               = 5,
-                                         
-                                         
-                                         MoreArgs = list(generacion_poblacion_ini = generacion_poblacion,
-                                                         funcion_fitness          = function(x) 
-                                                           funcion_fitness(poblacion = x,
-                                                                           
-                                                                           a = 0,
-                                                                           b = 5,
-                                                                           
-                                                                           N = 50,
-                                                                           
-                                                                           f = function(x) 6*x^2,
-                                                                           
-                                                                           f_reparacion = function(expr) 
-                                                                             f_reparacion(expr, 
-                                                                                                x = 0,
-                                                                                                f_x = 5),
-                                                                           wrappings = 5
-                                                           ),
-                                                         
-                                                         valores_posibles         = 0:3,
-                                                         valores_mutacion         = 0:3
-                                         )
-                                         ,
-                                         SIMPLIFY = FALSE
-                                         )
-
-fin <- Sys.time()
-fin - ini
-
-write_rds(resultados_f1, "actividad_3/resultados/f1.RDS")
+# 
+# ini <- Sys.time()
+# resultados_f1 <- mapply(pruebas_ga,
+#                                          num_pruebas              = 10,
+# 
+# 
+#                                          num_padres               = 2,
+# 
+#                                          tam_poblacion            = grid$tam_poblacion,
+#                                          prob_cruce               = grid$prob_cruce,
+#                                          tam_torneo               = grid$tam_torneo,
+#                                          prob_mutacion            = grid$prob_mutacion,
+# 
+#                                          num_genes               = grid$num_genes,
+#                                          num_genes_fijo          = grid$num_genes_fijo,
+# 
+#                                          max_iter                 = 500,
+#                                          print_each               = 5,
+# 
+# 
+#                                          MoreArgs = list(generacion_poblacion_ini = generacion_poblacion,
+#                                                          funcion_fitness          = function(x)
+#                                                            funcion_fitness(poblacion = x,
+# 
+#                                                                            a = 0,
+#                                                                            b = 5,
+# 
+#                                                                            N = 50,
+# 
+#                                                                            f = function(x) 6*x^2,
+# 
+#                                                                            f_reparacion = function(expr)
+#                                                                              f_reparacion(expr,
+#                                                                                                 x = 0,
+#                                                                                                 f_x = 5),
+#                                                                            wrappings = 5
+#                                                            ),
+# 
+#                                                          valores_posibles         = 0:3,
+#                                                          valores_mutacion         = 0:3
+#                                          )
+#                                          ,
+#                                          SIMPLIFY = FALSE
+#                                          )
+# 
+# fin <- Sys.time()
+# fin - ini
+# 
+# write_rds(resultados_f1, "actividad_3/resultados/f1.RDS")
 
 # F2 ----------------------------------------------------------------------
 ini <- Sys.time()
-resultados_f2 <- parallel::mcmapply(pruebas_ga,
+resultados_f2 <- mapply(pruebas_ga,
                                     num_pruebas              = 10,
                                     
                                     
@@ -161,7 +161,8 @@ resultados_f2 <- parallel::mcmapply(pruebas_ga,
                                     
                                     max_iter                 = 500,
                                     print_each               = 5,
-                                    
+                        
+                                       
                                     
                                     MoreArgs = list(generacion_poblacion_ini = generacion_poblacion,
                                                     funcion_fitness          = function(x) 
@@ -177,15 +178,15 @@ resultados_f2 <- parallel::mcmapply(pruebas_ga,
                                                                       f_reparacion = function(expr) 
                                                                         f_reparacion(expr, 
                                                                                            x = 0,
-                                                                                           f_x = -1)
+                                                                                           f_x = -1),
+                                                                      wrappings = 5
                                                       ),
                                                     
                                                     valores_posibles         = 0:3,
                                                     valores_mutacion         = 0:3
                                     )
                                     ,
-                                    SIMPLIFY = FALSE,
-                                    mc.cores = 10
+                                    SIMPLIFY = FALSE
 )
 
 fin <- Sys.time()
@@ -196,7 +197,7 @@ write_rds(resultados_f2, "actividad_3/resultados/f2.RDS")
 
 # F3 ----------------------------------------------------------------------
 ini <- Sys.time()
-resultados_f3 <- parallel::mcmapply(pruebas_ga,
+resultados_f3 <- mapply(pruebas_ga,
                                     num_pruebas              = 10,
                                     
                                     
@@ -228,7 +229,8 @@ resultados_f3 <- parallel::mcmapply(pruebas_ga,
                                                                       f_reparacion = function(expr) 
                                                                         f_reparacion(expr, 
                                                                                            x = 0,
-                                                                                           f_x = -1/4)
+                                                                                           f_x = -1/4),
+                                                                      wrappings = 5
                                                       ),
                                                     
                                                     valores_posibles         = 0:3,
@@ -247,7 +249,7 @@ write_rds(resultados_f3, "actividad_3/resultados/f3.RDS")
 
 # F4 ----------------------------------------------------------------------
 ini <- Sys.time()
-resultados_f4 <- parallel::mcmapply(pruebas_ga,
+resultados_f4 <- mapply(pruebas_ga,
                                     num_pruebas              = 10,
                                     
                                     
@@ -279,7 +281,8 @@ resultados_f4 <- parallel::mcmapply(pruebas_ga,
                                                                       f_reparacion = function(expr) 
                                                                         f_reparacion(expr, 
                                                                                            x = 0,
-                                                                                           f_x = 1/3)
+                                                                                           f_x = 1/3),
+                                                                      wrappings = 5
                                                       ),
                                                     
                                                     valores_posibles         = 0:3,
@@ -298,7 +301,7 @@ write_rds(resultados_f4, "actividad_3/resultados/f4.RDS")
 
 # F5 ----------------------------------------------------------------------
 ini <- Sys.time()
-resultados_f5 <- parallel::mcmapply(pruebas_ga,
+resultados_f5 <- mapply(pruebas_ga,
                                     num_pruebas              = 10,
                                     
                                     
@@ -330,7 +333,8 @@ resultados_f5 <- parallel::mcmapply(pruebas_ga,
                                                                       f_reparacion = function(expr) 
                                                                         f_reparacion(expr, 
                                                                                            x = 0,
-                                                                                           f_x = 0)
+                                                                                           f_x = 0),
+                                                                      wrappings = 5
                                                       ),
                                                     
                                                     valores_posibles         = 0:3,
@@ -349,7 +353,7 @@ write_rds(resultados_f5, "actividad_3/resultados/f5.RDS")
 
 # F6 ----------------------------------------------------------------------
 ini <- Sys.time()
-resultados_f6 <- parallel::mcmapply(pruebas_ga,
+resultados_f6 <- mapply(pruebas_ga,
                                     num_pruebas              = 10,
                                     
                                     
@@ -381,7 +385,8 @@ resultados_f6 <- parallel::mcmapply(pruebas_ga,
                                                                       f_reparacion = function(expr) 
                                                                         f_reparacion(expr, 
                                                                                            x = 0,
-                                                                                           f_x = 0)
+                                                                                           f_x = 0),
+                                                                      wrappings = 5
                                                       ),
                                                     
                                                     valores_posibles         = 0:3,
