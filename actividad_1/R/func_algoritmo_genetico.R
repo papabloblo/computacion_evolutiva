@@ -126,6 +126,14 @@ one_point_crossover <- function(padres, prob_cruce){
   return(hijos) 
 }
 
+whole_arithmetic_recombination <- function(padres, alpha = 1/2){
+  hijos <- list()
+  
+  hijos[[1]] <- alpha*padres[[1]] + (1-alpha)*padres[[2]]
+  hijos[[2]] <- alpha*padres[[2]] + (1-alpha)*padres[[1]]
+  return(hijos)
+}
+
 #' Title
 #'
 #' @param x 
