@@ -14,6 +14,12 @@ random_integer_representation <- function(valores, tam){
   sample(valores, size = tam, replace = TRUE)
 }
 
+random_floating_point_representation <- function(min = 0, max = 1, tam){
+  return(
+    runif(n = tam, min, max)
+    )
+}
+
 #' Generación de población.
 #' 
 #' Genera la población 
