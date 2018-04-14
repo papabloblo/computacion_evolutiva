@@ -146,7 +146,7 @@ grid <- data_frame(tam_poblacion = sample(10:50, size =  n, replace = TRUE),
 # F2 ----------------------------------------------------------------------
 ini <- Sys.time()
 resultados_f2 <- mapply(pruebas_ga,
-                                    num_pruebas              = 10,
+                                    num_pruebas              = 2,
                                     
                                     
                                     num_padres               = 2,
@@ -166,7 +166,7 @@ resultados_f2 <- mapply(pruebas_ga,
                                     
                                     MoreArgs = list(generacion_poblacion_ini = generacion_poblacion,
                                                     funcion_fitness          = function(x) 
-                                                      funcion_fitness(poblacion = x,
+                                                      funcion_fitness2(poblacion = x,
                                                                       
                                                                       a = 0,
                                                                       b = 5,
@@ -183,7 +183,8 @@ resultados_f2 <- mapply(pruebas_ga,
                                                       ),
                                                     
                                                     valores_posibles         = 0:3,
-                                                    valores_mutacion         = 0:3
+                                                    valores_mutacion         = 0:3,
+                                                    prob_mutacion_adaptativa = prob_mutacion_adaptativa
                                     )
                                     ,
                                     SIMPLIFY = FALSE

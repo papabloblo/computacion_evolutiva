@@ -31,7 +31,9 @@ algoritmo_genetico <- function(poblacion_inicial,
                                tam_poblacion = 10,
 
                                max_iter      = 100,
-                               print_each    = 100
+                               print_each    = 100,
+                               
+                               prob_mutacion_adaptativa = NULL
                                ){
 
   # fitness <- lapply(poblacion_inicial,
@@ -52,7 +54,11 @@ algoritmo_genetico <- function(poblacion_inicial,
 
   ini <- Sys.time()
   while (!any(fitness == 0) && i <= max_iter){
-
+    
+    if (!is.null(prob_mutacion_adaptativa)){
+      prob_mutacion <- prob_mutacion_adaptativa(i, max_iter)
+    }
+    print(prob_mutacion)
     mejor <- which(unlist(fitness) == min(unlist(fitness)))
     if (length(mejor) > 1){
       # Se muestrea para el caso en el que haya empate.
@@ -147,7 +153,9 @@ pruebas_ga <- function(num_pruebas = 10,
                        num_genes_fijo,
 
                        max_iter,
-                       print_each){
+                       print_each,
+                       
+                       prob_mutacion_adaptativa = NULL){
 
   # num_genes <- sum(is.na(genes_fijos))
   
@@ -173,7 +181,8 @@ pruebas_ga <- function(num_pruebas = 10,
                                        tam_poblacion,
                                        
                                        max_iter,
-                                       print_each   
+                                       print_each ,
+                                       prob_mutacion_adaptativa
                                        )
                                    )
 

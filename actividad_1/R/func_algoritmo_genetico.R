@@ -52,6 +52,27 @@ generacion_poblacion <- function(valores_posibles,
 }
 
 
+generacion_param_auto_adaptativo <- function(num_genes,
+                                             tam_poblacion,
+                                             min = 0,
+                                             max = 1,
+                                             num_genes_fijo = TRUE){
+  
+  if (num_genes_fijo){
+    num_genes <- rep(num_genes, tam_poblacion)
+  } else {
+    num_genes <- sample(num_genes, size = tam_poblacion, replace = T)
+  }
+  
+  lapply(num_genes,
+         random_floating_point_representation,
+         min = min,
+         max = max
+  )
+  
+}
+
+
 
 #' Torneo
 #'
@@ -96,6 +117,9 @@ seleccion_padres <- function(num_padres,
   )
 }
 
+prob_mutacion_adaptativa <- function(t, max_iter){
+  return(1 - (t/max_iter))
+}
 
 #' Cruce por un punto
 #' 
