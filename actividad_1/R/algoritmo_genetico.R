@@ -33,7 +33,9 @@ algoritmo_genetico <- function(poblacion_inicial,
                                max_iter      = 100,
                                print_each    = 100,
                                
-                               prob_mutacion_adaptativa = NULL
+                               prob_mutacion_adaptativa = NULL,
+                               
+                               local_search = NULL
                                ){
 
   # fitness <- lapply(poblacion_inicial,
@@ -58,7 +60,7 @@ algoritmo_genetico <- function(poblacion_inicial,
     if (!is.null(prob_mutacion_adaptativa)){
       prob_mutacion <- prob_mutacion_adaptativa(i, max_iter)
     }
-    print(prob_mutacion)
+    
     mejor <- which(unlist(fitness) == min(unlist(fitness)))
     if (length(mejor) > 1){
       # Se muestrea para el caso en el que haya empate.
@@ -83,6 +85,21 @@ algoritmo_genetico <- function(poblacion_inicial,
                                     )
 
     fitness <- funcion_fitness(poblacion)
+    
+    if (!is.null(local_search)){
+      poblacion_local_search <- mapply(local_search,
+                                       
+                                       x = poblacion, 
+                                       valor_fitness_x = fitness,
+                                       MoreArgs = list(
+                                         funcion_fitness = funcion_fitness,
+                                         valores_posibles = valores_mutacion),
+                                       SIMPLIFY = FALSE
+                                       )
+      
+      poblacion <- lapply(poblacion_local_search, function(x) x[[1]])
+      fitness <- lapply(poblacion_local_search, function(x) x[[2]])
+    }
                   
     peor <- which(unlist(fitness) == max(unlist(fitness)))
     if (length(peor) > 1){
@@ -155,7 +172,8 @@ pruebas_ga <- function(num_pruebas = 10,
                        max_iter,
                        print_each,
                        
-                       prob_mutacion_adaptativa = NULL){
+                       prob_mutacion_adaptativa = NULL,
+                       local_search = FALSE){
 
   # num_genes <- sum(is.na(genes_fijos))
   
@@ -182,11 +200,11 @@ pruebas_ga <- function(num_pruebas = 10,
                                        
                                        max_iter,
                                        print_each ,
-                                       prob_mutacion_adaptativa
+                                       prob_mutacion_adaptativa,
+                                       local_search
                                        )
                                    )
 
 
   return(resultados)
 }
-

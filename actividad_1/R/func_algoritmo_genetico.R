@@ -246,3 +246,31 @@ mutacion_poblacion <- function(x, prob_mutacion, valores_posibles){
   )
 }
 
+
+
+
+stochastic_hill_climbing <- function(x, valores_posibles){
+  mutaciones <- vector("list", length = length(x))
+  for (i in seq_along(x)){
+    x_mutado <- x
+    x_mutado[i] <- sample(valores_posibles, size = 1)
+    mutaciones[[i]] <- x_mutado
+  }
+  return(mutaciones)
+}
+
+local_search <- function(x, funcion_fitness, valores_posibles, valor_fitness_x){
+  
+  mutaciones_x <- stochastic_hill_climbing(x, valores_posibles)
+  
+  valor_fitness <- funcion_fitness(mutaciones_x)
+  
+  id_min <- which.min(valor_fitness)
+  mejor_fitness <- valor_fitness[[id_min]]
+  if (valor_fitness_x < mejor_fitness){
+    return(list(x, fitness = valor_fitness_x))
+  } else {
+    return(list(mutaciones_x[[id_min]], fitness = mejor_fitness))
+  }
+}
+

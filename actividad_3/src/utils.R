@@ -38,11 +38,15 @@ fitness_act_3 <- function(f,
   F_prima_eval <- F_prima(a + (0:N)*delta_x, h = h, F_hat = function(x) eval(as.expression(ind)))
   
   y <- abs(F_prima_eval - f_eval)
+  if (sum(y <= U, na.rm = TRUE) == length(y)){
+    res <- 0
+  } else {
+    omega <- ifelse(y <= U, 
+                    K0,
+                    K1)
+    res <- (1/(N+1)) * sum(omega * y)
+  }
   
-  omega <- ifelse(y <= U, 
-                  K0,
-                  K1)
-  res <- (1/(N+1)) * sum(omega * y)
   if (is.na(res)){
     return(Inf)
   } else { 
@@ -59,7 +63,7 @@ funcion_fitness <- function(poblacion, a, b, N, f, f_reparacion, wrappings){
                                       wrappings = wrappings,
                                       mc.cores = 10)
   
-  terminales <- map_lgl(poblacion_inicial_decod,function(x) x$type != "NT")
+  terminales <- map_lgl(poblacion_inicial_decod, function(x) x$type != "NT")
   
   poblacion_reparada <- map(poblacion_inicial_decod[terminales], 
                             f_reparacion)

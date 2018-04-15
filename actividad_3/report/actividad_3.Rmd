@@ -1,0 +1,167 @@
+---
+title: "Actividad 3"
+author: "Pablo Hidalgo"
+date: "14/4/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Introducción
+
+Para la resolución con éxito de un problema de optimización no solo será necesario conocer las características que definen el problema sino que el enfoque utilizado para resolverlo será crucial. En el caso de la computación evolutiva disponemos de distintos algoritmos para resolver un mismo problema y cuya elección dependerá de la forma de la función objetivo, las restricciones del problema, etcétera.
+
+En esta actividad el objetivo es el de inferir la solución algebraica de un integral haciendo uso de  la evolución gramatical que es, esencialmente, una forma de transformar (*mapping*) el genotipo para obtener un fenotipo que pueda ser expresado mediante una gramática (*gramática de Backus-Naur*) y un algoritmo genético.
+
+# Descripción del problema
+
+El objetivo que se persigue es el de encontrar una función $F(x)$ tal que 
+
+$$
+F(x) = \int f(x) dx
+$$
+
+siendo $f(x)$ una función tal que $f: X \subseteq \mathbb{R} \rightarrow \mathbb{R}$. Es decir, estamos buscando la integral indefinida $F(X)$.
+
+Tras el desarrollo teórico que se realiza en el enunciado de la práctica y haciendo una aproximación discreta, el problema se puede convertir en resolver el siguiente problema de optimización:
+
+$$
+\hat{F}(x) = \underset{F(x)}{argmin}\qquad \frac{1}{N+1} \sum_{i=0}^N error_i(F'(a + i\cdot \Delta x),\, f(a + i \cdot \Delta x))
+$$
+
+donde:
+
+  - $\hat{F}(x)$ es la aproximación de la integral buscada,
+  - $f$ es la función que se de quiere integrar,
+  - $a$ y $b$ se corresponden con los límites del intervalo de integración, 
+  - $\Delta x = \frac{b-a}{N}$ siendo $N + 1$ el número de puntos a muestrear en el intervalo de integración, 
+  - $F'(x)$ es una aproximación de la derivada definida como
+  
+$$  
+F'(a + i\cdot \Delta x) = \frac{F(a + i \cdot \Delta x) + h) - F(a + i \cdot \Delta x)}{h}, \qquad \forall \, i\in\{0, 1, \ldots,N\}
+$$
+    siendo $h$ un valor muy pequeño y que definirá la precisión de $F'$,
+    
+  - $error(x)$ función para medir el error cometido.
+    
+# Método de resolución
+
+A la hora de la resolución del valor de una integral se pueden seguir dos caminos fundamentalmente. En el primero de ellos, el objetivo se centra en encontrar **el valor numérico** de la integral $\int_a^bf(x)dx$; en el segundo se busca la **expresión algebraica** de $F(x) = \int_a^b f(x) dx$ y, aplicando el segundo teorema fundamental del cálculo, poder calcular $\int_a^b f(x)dx = F(b) - F(a)$.
+
+Como ejemplo, imaginemos que queremos calcular la siguiente integral:
+
+$$
+F(x) = \int_a^b x\, dx
+$$
+
+Trivialmente sabemos que $F(x) = \frac{x^2}{2} + C$ y, por tanto, podríamos obtener
+$$
+ \int_0^2 x\, dx = F(2)-F(0) = \frac{2^2}{2} + C - \left(\frac{0^2}{2} + C\right) = 2
+$$
+
+En el primero de los caminos anteriormente descritos estaríamos interesados en conocer ese valor $2$ de la integral sin importarnos la forma funcional de la integral. En el segundo camino nuestro interés sería tener un mecanismo para encontrar la expresión $\frac{x^2}{2} + C$ directamente.
+
+Esta actividad se centra en la resolución de la integral mediante el segundo camino. Para ello, utilizaremos la **evolución gramatical** propuesta en (1). Fundamentalmente la evolución gramatical es un proceso que permite traducir una expresión genotípica en un expresión fenotípica mediante una gramática definida. 
+    
+## Mecanismos para el manejo de restricciones.
+
+Toda integral indefinida tendrá una constante $C\in\mathbb{R}$ de forma que
+
+$$
+\int_a^bf(x)\, dx = F(x) + C = F^*(x).
+$$
+
+Para poder calcular $C$ es necesario imponer una restricción del tipo $F^*(c)=d$. La forma elegida para incorporar esta restricción al algortmo genético es la siguiente:
+
+cada individuo tendrá una expresión $F_i(x)$ la cual será reparada de forma que
+
+$$
+F_{i'}(x) = F_i(x) + \alpha \qquad \text{tal que} \qquad F_{i'}(c) = d
+$$
+
+Por ejemplo, si se tuviese la restricción de que $F(0) = 5$ y un individuo tuviese como expresión $F_i(x) = x^2 + 1$, este sería reparado como
+
+$$
+5 = F_{i'}(0) = F_i(0) + \alpha = 0^2 + 1 + \alpha \qquad \Leftrightarrow \qquad \alpha = 5 - 1 = 4
+$$
+
+y, por tanto, el nuevo individuo sería
+
+$$
+F_{i'}(x) = x^2 + 1 + 4 = x^2 + 5
+$$
+
+Una vez que el individuo ha sido reparado, se procede a evaluar su valor de fitness. 
+
+La función de reparación (o decodificador) empleada sería del tipo **cada individuo $i\in S'$ tiene una única correspondencia $i'\in S$, pero la unicidad no se da en sentido contrario**, es decir, siguiendo el ejemplo anterior los individuos $F_1(x) = x^2$, $F_2(x) = x^2+1$ y $F_1(x) = x^2+ 3$ tendrían una única representación en $S$, $F^*(x) = x^2 + 5$.
+
+## Mecanismo de búsqueda local
+
+El mecanismo de búsqueda local implementado es una modificación del *Hill Climbing*. Dado el individuo $s = (s_1, s_2, \ldots, s_j, \ldots, s_N)$ se producirán $N$ copias del individuo de forma que la copia $s^j$ sea idéntica al original excepto en el gen $s_j^j$ que será una mutación aleatoria. Por ejemplo, si el genotipo del individuo es $s = (1, 0, 3)$ y $s_i\in \{0, 1, 2,3\}$, un posible resultado sería 
+$$
+s = (1, 0, 3)\\
+s^1 = (0,0,3)\\
+s^2 = (1,2, 3)\\
+s^3 = (1, 0, 1)
+$$
+Una vez que se han realizado las $N$ mutaciones, se evalúa la función de fitness para cada una de ellas y el individuo original es reemplezado por el emjor individuo mutado en el caso de que haya uno mejor.
+
+## Parámetros adaptativos
+
+Se ha implementado que la probabilidad de mutación $\sigma$ se cambie de forma adaptativa siguiendo la función
+$$
+\sigma(t) = 1 - \frac{t}{T}
+$$
+siendo $T$ el número máximo de iteraciones. Esta función, suponiendo $500$ por ejemplo, tendría la forma
+```{r}
+data_frame(t = 1:500,
+           sigma = 1 - (1:500)/500) %>% 
+  ggplot(aes(x = t,
+             y = sigma))+ 
+  geom_line()
+```
+
+
+
+# Resultados
+
+# Análisis y comparación de resultados
+
+A continuación se hace una comparativa de los resultados obtenidos para cada uno de los problemas propuestos en función de la variación de los parámetros del algoritmo genético.
+
+Idealmente nos gustaría ser capaces de obtener un algoritmo de optimización que fuese aplicable a cualquier tipo de problema y, más aún, que no estuviese sujeto a una parametrización que dependa de aquel encargado de ejecutar el algoritmo. En la práctica, no existen algoritmos de este tipo. Los algoritmos genéticos tienen asociados una serie de parámetros (tamaño de la población, probabilidad de mutación, número de iteraciones, etcétera) que, según los valores fijados, el algoritmo actuará de una u otra forma. Esto supone que una configuración de parámetros que se considera buena para un problema, no tenga por qué serlo para otro y, por lo tanto, no existe una configuración de parámetros universal que funcione bajo cualquier problema. 
+
+Sin embargo, tener la posibilidad de modificar el valor de estos parámetros puede también ayudarnos a adecuar el comportamiento del algoritmo a la tipología de problema favoreciendo, por ejemplo, la eficiencia computacional sacrificando precisión en la solución.
+
+Una idea para estudiar el comportamiento de los parámetros que rigen el algoritmo genético es el de fijar una serie de valores para cada parámetro y depués hacer todas las combinaciones posibles. Si suponemos que el algoritmo depende de 6 parámetros y a cada uno de ellos le concedemos un límite de 10 valores, tendríamos que ejecutar el algoritmo un total de  $10^6$ veces lo que supone un gran número de ejecuciones. Además, obtendríamos configuraciones a intervalos regulares en forma de rejilla de forma que
+
+```{r}
+crossing(param1 = 1:5, param2 = 1:5) %>% 
+  ggplot(aes(x = param1, y = param2)) + 
+  geom_point(size = 5)
+```
+
+Otra idea sería la de hacer realizaciones aleatorias de los parámetros para cubrir el espacio paramétrico de forma aleatoria (*random search*)
+
+```{r}
+n <- 25
+data_frame(param1 = runif(n = n, min = 1, max= 5), param2 = runif(n = n, min = 1, max= 5)) %>% 
+  ggplot(aes(x = param1, y = param2)) + 
+  geom_point(size = 5)
+```
+
+Esta búsqueda aleatoria es la que se ha decidido seguir para el estudio del comportamiento del algoritmo genético. 
+
+## Algoritmo genético 1
+
+
+## Algoritmo con probabilidad de mutación adaptativa
+
+## Algoritmo con búsqueda local
+
+# Conclusiones
+
+# Implementación
