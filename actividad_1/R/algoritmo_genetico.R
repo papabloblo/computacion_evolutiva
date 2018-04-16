@@ -183,7 +183,7 @@ pruebas_ga <- function(num_pruebas = 10,
                                                 num_genes_fijo = num_genes_fijo
                                                 )
 
-  resultados <- parallel::mclapply(seq(num_pruebas),
+  resultados <- lapply(seq(num_pruebas),
                                    function(x)
                                      algoritmo_genetico(
                                        poblacion_inicial,
