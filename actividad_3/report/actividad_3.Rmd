@@ -6,8 +6,27 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
+library(broom)
+
+set.seed(1234)
+n <- 50
+tam_poblacion <- sample(10:100, size =  n, replace = TRUE)
+prob_cruce <- runif(n = n, min = 0, max = 1)
+prob_mutacion <- runif(n = n, min = 0, max = 1)
+num_genes_fijos <- sample(c(TRUE, FALSE), size = n, replace = TRUE)
+
+grid <- data_frame(tam_poblacion = sample(10:50, size =  n, replace = TRUE),
+                   tam_torneo = sample(2:10, size = n, replace = TRUE),
+                   prob_cruce = runif(n = n, min = 0, max = 1),
+                   prob_mutacion = runif(n = n, min = 0, max = 1),
+                   num_genes_fijo = sample(c(TRUE, FALSE), size = n, replace = TRUE),
+                   num_genes = sample(10:100, size = n, replace = TRUE)
+)
+
+grid$comb_parametros <- 1:nrow(grid)
+
 ```
 
 # Introducción
@@ -167,7 +186,99 @@ La primera batería de pruebas se ha realizado aplicando un algotimo genético c
 - Aplicando la función de reparación para cada individuo.
 
 
+### Plots de progreso
 
+Comenzaremos representando los plots de progreso para cada una de las funciones. Cada una de las líneas de progreso representa el valor medio del fitness obtenido en cada iteración realizada con una configuración concreta de parámetros.
+
+```{r echo=FALSE}
+progreso <- read_rds("../resultados/resumen/progreso_1.RDS") %>% 
+  mutate(adaptativo = FALSE)
+progreso_adaptativo <- read_rds("../resultados/resumen/progreso_adpatativo.RDS") %>% 
+  mutate(adaptativo = TRUE)
+
+progreso <- 
+```
+
+```{r echo=FALSE}
+progreso %>% 
+  ggplot(aes(x = iter, y = fitness_min)) + 
+  geom_line(aes(group =comb_parametros), alpha = 0.5) + 
+  facet_wrap(~funcion, scales = "free",ncol = 2)
+```
+
+En el apéndice 1 se puede consultar con detalle el valor medio de la función de fitness así como mínimo, máximo y desviación típica para cada una de las combinaciones de parámetros y para cad una de las funciones. También aparece la taza de éxito. En esta sección haremos un resumen. De las 50 combinaciones de parámetros destacan que en el 94% de ellas se ha conseguido alcanzar el óptimo para la función 6. En el otro extremo, ninguna combinación ha sido capaz de encontrar la expresión óptima en las funciones 3 y 4.
+
+```{r}
+ind_fitness_iter <- read_rds("../resultados/resumen/ind_fitness_iter_1.RDS")
+```
+
+```{r}
+ind_fitness_iter %>% group_by(funcion) %>% 
+  summarise(mean(succes_rate > 0))
+```
+
+```{r}
+ind_fitness_iter %>% group_by(funcion) %>% 
+  summarise(mean(fitness_min))
+```
+
+En todas las funciones, en la tabla se muestra el número de iteraciones medias que se realizaron para cada función. En todas ellas, la media se sitúa alrredeor de $250$ iteraciones.
+
+```{r}
+ind_fitness_iter %>% group_by(funcion) %>% 
+  summarise(iter_media = mean(iter_mean),
+            iter_sd = sd(iter_mean))
+```
+
+```{r}
+ind_fitness_iter %>% 
+  ggplot(aes(x = as.character(funcion),
+             y = iter_mean)) + 
+  geom_jitter(height = 0, alpha = 0.5) + 
+  geom_boxplot(alpha = 0)
+```
+
+
+```{r}
+ind_fitness_iter %>% group_by(funcion) %>% 
+  summarise(fitness_medio = mean(fitness_mean),
+            fitness_sd = sd(fitness_mean))
+```
+
+## Resultados función a función
+
+Para describir el comportamiento general y cómo reacciona cada función con las combinaciones de los parámetros, vamos a utilizar una regresión lineal para intentar explicar el fitness obtenido en función de la combinación de parámetros
+
+### Función 1: $6x^2$
+
+```{r}
+ind_fitness_iter %>% 
+  group_by(funcion) %>% 
+  nest() %>% 
+  mutate(modelo_lm = map(data, function(x) lm(fitness_mean~ tam_poblacion + tam_torneo + prob_cruce + prob_mutacion + num_genes + num_genes_fijo,
+                                              data = x)),
+         coeficientes = map(modelo_lm, tidy)) %>% 
+  select(funcion, coeficientes) %>% 
+  unnest() %>% select(funcion, term, estimate) %>% 
+  spread(term, estimate)
+```
+
+```{r}
+grid_stand <- grid %>% 
+  mutate_at(setdiff(names(grid), c("comb_parametros", "num_genes_fijo")), function(x) (x - mean(x))/sd(x))
+
+ind_fitness_iter %>% 
+  select(setdiff(names(ind_fitness_iter), c("tam_poblacion", "tam_torneo", "prob_cruce", "prob_mutacion", "num_genes_fijo", "num_genes"))) %>% 
+  left_join(grid_stand) %>% 
+  group_by(funcion) %>% 
+  nest() %>% 
+  mutate(modelo_lm = map(data, function(x) lm(fitness_mean~ tam_poblacion + tam_torneo + prob_cruce + prob_mutacion + num_genes + num_genes_fijo,
+                                              data = x)),
+         coeficientes = map(modelo_lm, tidy)) %>% 
+  select(funcion, coeficientes) %>% 
+  unnest() %>% select(funcion, term, estimate) %>% 
+  spread(term, estimate)
+```
 
 ## Algoritmo con probabilidad de mutación adaptativa
 

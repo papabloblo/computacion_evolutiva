@@ -25,71 +25,8 @@ grid <- data_frame(tam_poblacion = sample(10:50, size =  n, replace = TRUE),
                    num_genes = sample(10:100, size = n, replace = TRUE)
 )
 
-resultados <- function(x,
-                        
-                        a,
-                        b,
-                        
-                        N,
-                        
-                        f, 
-                        f_reparacion,
-                        wrappings){
-  
-  exitos <- map(x, 
-                funcion_mejor_ind,
-                a,
-                b,
-                
-                N,
-                
-                f, 
-                f_reparacion,
-                wrappings)
-  
-  tabla_resultados <- map(x, res) %>% 
-    bind_rows %>% 
-    select(id, iter, min) %>% 
-    mutate(comb_parametros = rep(1:50, each = 500*10))
-  
-  grid <- grid %>% mutate(comb_parametros = 1:nrow(grid))
-  
-  tabla_resultados <- tabla_resultados %>% 
-    left_join(grid)
-  
-  media_fitness <- tabla_resultados %>%
-    group_by(iter, comb_parametros) %>% 
-    summarise(fitness_min = min(min), 
-              fitness_mean = mean(min),
-              fitness_sd   = sd(min),
-              fitness_max  = max(min))
-  
-  
-  ind_fitness_iter <- tabla_resultados %>% 
-    group_by(comb_parametros,
-             id) %>% 
-    top_n(-1, wt = min) %>% 
-    top_n(-1, wt = iter) %>% 
-    ungroup() %>%
-    group_by(comb_parametros) %>% 
-    rename(fitness = min) %>% 
-    summarise(  fitness_min = min(fitness), 
-                fitness_mean = mean(fitness),
-                fitness_sd   = sd(fitness),
-                fitness_max  = max(fitness),
-                
-                iter_min = min(iter), 
-                iter_mean = mean(iter),
-                iter_sd   = sd(iter),
-                iter_max  = max(iter)
-    ) %>% 
-    left_join(grid) %>% 
-    mutate(succes_rate = map_dbl(exitos, function(x) mean(unlist(x))))
-  
-  return(list(progreso = media_fitness,
-              ind_fitness_iter = ind_fitness_iter))
-  
-}
+
+# Algoritmo genético sin modificaciones -----------------------------------
 
 
 
@@ -200,6 +137,154 @@ tabla_resultados3$ind_fitness_iter$funcion <- 3
 tabla_resultados4$ind_fitness_iter$funcion <- 4
 tabla_resultados5$ind_fitness_iter$funcion <- 5
 tabla_resultados6$ind_fitness_iter$funcion <- 6
+
+progreso <- bind_rows(tabla_resultados1$progreso,
+                      tabla_resultados2$progreso,
+                      tabla_resultados3$progreso,
+                      tabla_resultados4$progreso,
+                      tabla_resultados5$progreso,
+                      tabla_resultados6$progreso)
+
+ind_fitness_iter <- bind_rows(tabla_resultados1$ind_fitness_iter,
+                              tabla_resultados2$ind_fitness_iter,
+                              tabla_resultados3$ind_fitness_iter,
+                              tabla_resultados4$ind_fitness_iter,
+                              tabla_resultados5$ind_fitness_iter,
+                              tabla_resultados6$ind_fitness_iter)
+
+
+write_rds(progreso, "actividad_3/resultados/resumen/progreso_1.RDS")
+write_rds(ind_fitness_iter, "actividad_3/resultados/resumen/ind_fitness_iter_1.RDS")
+
+
+# Adaptativo --------------------------------------------------------------
+
+
+tabla_resultados1 <- resultados(x = read_rds("actividad_3/resultados/f1_adaptativo.RDS"),
+                                a = 0,
+                                b = 5,
+                                
+                                N = 50,
+                                
+                                f = function(x) 6*x^2,
+                                
+                                f_reparacion = function(expr)
+                                  f_reparacion(expr,
+                                               x = 0,
+                                               f_x = 5),
+                                wrappings = 5
+)
+
+
+tabla_resultados2 <- resultados(x = read_rds("actividad_3/resultados/f2_adaptativo.RDS"),
+                                a = 0,
+                                b = 5,
+                                
+                                N = 50,
+                                
+                                f = function(x) 2/(x + 1)^2,
+                                
+                                f_reparacion = function(expr) 
+                                  f_reparacion(expr, 
+                                               x = 0,
+                                               f_x = -1),
+                                wrappings = 5)
+
+
+tabla_resultados3 <- resultados(x = read_rds("actividad_3/resultados/f3_adaptativo.RDS"),
+                                a = -2,
+                                b = 2,
+                                
+                                N = 40,
+                                
+                                f = function(x) (1/4)*(3*x^2 - 2*x + 1),
+                                
+                                f_reparacion = function(expr) 
+                                  f_reparacion(expr, 
+                                               x = 0,
+                                               f_x = -1/4),
+                                wrappings = 5)
+
+
+tabla_resultados4 <- resultados(x = read_rds("actividad_3/resultados/f4_adaptativo.RDS"),
+                                a = 0,
+                                b = 2,
+                                
+                                N = 20,
+                                
+                                f = function(x) (1/3)*exp(2*x) - exp(-6*x),
+                                
+                                f_reparacion = function(expr) 
+                                  f_reparacion(expr, 
+                                               x = 0,
+                                               f_x = 1/3),
+                                wrappings = 5)
+
+
+# 
+# tabla_resultados5 <- resultados(x = read_rds("actividad_3/resultados/f5_adaptativo.RDS"),
+#                                 a = 0,
+#                                 b = 5,
+#                                 
+#                                 N = 50,
+#                                 
+#                                 f = function(x) log(1 + x) + x/(1+x),
+#                                 
+#                                 f_reparacion = function(expr) 
+#                                   f_reparacion(expr, 
+#                                                x = 0,
+#                                                f_x = 0),
+#                                 wrappings = 5)
+
+
+
+tabla_resultados6 <- resultados(x = read_rds("actividad_3/resultados/f6_adaptativo.RDS"),
+                                a = -2,
+                                b = 2,
+                                
+                                N = 40,
+                                
+                                f = function(x) exp(x) * (sin(x) + cos(x)),
+                                
+                                f_reparacion = function(expr) 
+                                  f_reparacion(expr, 
+                                               x = 0,
+                                               f_x = 0),
+                                wrappings = 5)
+
+
+tabla_resultados1$progreso$funcion <- 1
+tabla_resultados2$progreso$funcion <- 2
+tabla_resultados3$progreso$funcion <- 3
+tabla_resultados4$progreso$funcion <- 4
+# tabla_resultados5$progreso$funcion <- 5
+tabla_resultados6$progreso$funcion <- 6
+
+tabla_resultados1$ind_fitness_iter$funcion <- 1
+tabla_resultados2$ind_fitness_iter$funcion <- 2
+tabla_resultados3$ind_fitness_iter$funcion <- 3
+tabla_resultados4$ind_fitness_iter$funcion <- 4
+# tabla_resultados5$ind_fitness_iter$funcion <- 5
+tabla_resultados6$ind_fitness_iter$funcion <- 6
+
+progreso <- bind_rows(tabla_resultados1$progreso,
+                      tabla_resultados2$progreso,
+                      tabla_resultados3$progreso,
+                      tabla_resultados4$progreso,
+                      # tabla_resultados5$progreso,
+                      tabla_resultados6$progreso)
+
+ind_fitness_iter <- bind_rows(tabla_resultados1$ind_fitness_iter,
+                              tabla_resultados2$ind_fitness_iter,
+                              tabla_resultados3$ind_fitness_iter,
+                              tabla_resultados4$ind_fitness_iter,
+                              # tabla_resultados5$ind_fitness_iter,
+                              tabla_resultados6$ind_fitness_iter)
+
+
+write_rds(progreso, "actividad_3/resultados/resumen/progreso_adpatativo.RDS")
+write_rds(ind_fitness_iter, "actividad_3/resultados/resumen/ind_fitness_iter_adaptativo.RDS")
+
 
 
 
