@@ -173,7 +173,7 @@ pruebas_ga <- function(num_pruebas = 10,
                        print_each,
                        
                        prob_mutacion_adaptativa = NULL,
-                       local_search = FALSE){
+                       local_search = NULL){
 
   # num_genes <- sum(is.na(genes_fijos))
   
