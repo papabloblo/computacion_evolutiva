@@ -93,7 +93,21 @@ funcion_mejor_ind <- function(y,
       f = f)
 }
 
-for(i in seq_along(x)){
-  print(i)
-  funcion_mejor_ind(x[[i]])
-}
+
+
+reglas_def <- list(expr = gsrule("<expr><op><expr>",
+                                 "(<expr><op><expr>)",
+                                 "<pre_op>(<expr>)",
+                                 "<var>"),
+                   
+                   op = gsrule("+", "-", "*", "/"),
+                   
+                   pre_op = gsrule("sin",
+                                   "cos",
+                                   "exp",
+                                   "log"),
+                   
+                   var = gsrule("x", "1.0")) 
+
+grammar_def <- CreateGrammar(ruleDef = reglas_def,
+                             startSymb = gsrule("<expr>"))

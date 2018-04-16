@@ -109,6 +109,8 @@ s^3 = (1, 0, 1)
 $$
 Una vez que se han realizado las $N$ mutaciones, se evalúa la función de fitness para cada una de ellas y el individuo original es reemplezado por el emjor individuo mutado en el caso de que haya uno mejor.
 
+Esta implementación de la búsqueda local hace que los tiempos de computación se disparen ya que, al menos en la implementación que se ha realizado del algoritmo genético, la parte más costosa en tiempo es la evaluación de la función de fitness (en particular, la traducción genotipo-fenotipo de la evolución gramatical).
+
 ## Parámetros adaptativos
 
 Se ha implementado que la probabilidad de mutación $\sigma$ se cambie de forma adaptativa siguiendo la función
@@ -155,7 +157,16 @@ data_frame(param1 = runif(n = n, min = 1, max= 5), param2 = runif(n = n, min = 1
 
 Esta búsqueda aleatoria es la que se ha decidido seguir para el estudio del comportamiento del algoritmo genético. 
 
+Para cada una de las combinaciones de parámetros se han ejecutado $10$ realizaciones independientes.
+
 ## Algoritmo genético 1
+
+La primera batería de pruebas se ha realizado aplicando un algotimo genético con:
+
+- Aplicando elitismo.
+- Aplicando la función de reparación para cada individuo.
+
+
 
 
 ## Algoritmo con probabilidad de mutación adaptativa
